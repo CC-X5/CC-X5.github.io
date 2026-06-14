@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andreas Jung — Software Engineer</title>
+<meta name="description" content="Andreas Jung — Software Engineer focused on cloud-native architectures, Kubernetes and Zero-Trust security. Projects, background and contact.">
+<meta name="author" content="Andreas Jung">
+<meta name="keywords" content="Andreas Jung, Software Engineer, Cloud, DevOps, Kubernetes, Zero Trust, Spring Boot, Zweibrücken, Portfolio">
+<meta name="theme-color" content="#06080d">
+<link rel="canonical" href="https://cc-x5.github.io/">
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Open Graph (LinkedIn, WhatsApp, Facebook …) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andreas Jung">
+<meta property="og:title" content="Andreas Jung — Software Engineer">
+<meta property="og:description" content="Cloud-Native · Kubernetes · Zero-Trust Security. Projects, background and contact.">
+<meta property="og:url" content="https://cc-x5.github.io/">
+<meta property="og:image" content="https://cc-x5.github.io/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Andreas Jung — Software Engineer">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="de_DE">
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Andreas Jung — Software Engineer">
+<meta name="twitter:description" content="Cloud-Native · Kubernetes · Zero-Trust Security.">
+<meta name="twitter:image" content="https://cc-x5.github.io/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@200;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#06080d;
+    --bg2:#0b1018;
+    --fg:#e8edf4;
+    --muted:#8a94a6;
+    --accent:#36e2c4;      /* teal */
+    --accent2:#5b8cff;     /* electric blue */
+    --glow:rgba(54,226,196,.55);
+    --line:rgba(255,255,255,.08);
+    --card:rgba(255,255,255,.025);
+    --display:'Sora',sans-serif;
+    --mono:'Space Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--display);
+    font-weight:400;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body.locked{overflow:hidden}
+  ::selection{background:var(--accent); color:#04221d}
+
+  /* --- living three.js network sphere (the "programmer" background) --- */
+  #bg3d{position:fixed; inset:0; z-index:0; display:block; opacity:0; transition:opacity 1.8s ease}
+  #bg3d.on{opacity:1}
+  /* --- cosmos canvas (big bang) sits above the 3d bg during the intro --- */
+  #cosmos{position:fixed; inset:0; z-index:0; display:block; transition:opacity 1.6s ease}
+  #cosmos.faded{opacity:0}
+  #cosmos.shake{animation:shake .6s linear}
+  @keyframes shake{
+    0%,100%{transform:translate(0,0)}
+    12%{transform:translate(-14px,9px)}
+    30%{transform:translate(12px,-13px)}
+    48%{transform:translate(-9px,-7px)}
+    66%{transform:translate(13px,8px)}
+    84%{transform:translate(-6px,6px)}
+  }
+  /* grain + vignette (wie das Original-Design) */
+  .overlay{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(2,3,6,.85) 100%);
+  }
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── INTRO ── */
+  #intro{
+    position:fixed; inset:0; z-index:20;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center; padding:28px; cursor:pointer;
+    transition:opacity .9s ease;
+  }
+  #intro.gone{opacity:0; pointer-events:none}
+  #intro .intro-kicker{
+    font-family:var(--mono); font-size:12px; letter-spacing:4px;
+    color:var(--accent); text-transform:uppercase;
+    margin-top:150px; margin-bottom:14px;
+  }
+  #intro .intro-hint{
+    font-family:var(--mono); font-size:12px; letter-spacing:3px;
+    color:var(--muted); text-transform:uppercase;
+    animation:hintPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes hintPulse{0%,100%{opacity:.4}50%{opacity:1}}
+  #flash{
+    position:fixed; inset:0; z-index:30;
+    background:radial-gradient(circle,#fff 0%,#d8fff5 30%,transparent 70%);
+    opacity:0; pointer-events:none;
+  }
+  #flash.boom{animation:flash 1.1s ease-out forwards}
+  @keyframes flash{0%{opacity:1}100%{opacity:0}}
+
+  /* nav */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:10;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:22px 32px;
+    backdrop-filter:blur(6px);
+    background:linear-gradient(to bottom, rgba(6,8,13,.6), transparent);
+    opacity:0; transition:opacity 1s ease;
+  }
+  body.booted nav{opacity:1}
+  nav .brand{font-family:var(--mono); font-size:14px; letter-spacing:1px; color:var(--fg)}
+  nav .brand b{color:var(--accent)}
+  nav .links{display:flex; gap:26px; align-items:center}
+  nav a{
+    color:var(--muted); text-decoration:none; font-size:13px;
+    font-family:var(--mono); letter-spacing:.5px; transition:color .25s;
+  }
+  nav a:hover{color:var(--accent)}
+  .lang-toggle{
+    font-family:var(--mono); font-size:12px; letter-spacing:1px;
+    color:var(--muted); background:transparent; border:1px solid var(--line);
+    padding:6px 12px; border-radius:2px; cursor:pointer;
+    transition:color .25s, border-color .25s; text-transform:uppercase;
+  }
+  .lang-toggle:hover{color:var(--accent); border-color:var(--accent)}
+  @media(max-width:640px){ nav .links a{display:none} }
+
+  /* --- content --- */
+  .wrap{position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:110px 28px 0}
+  .wrap[hidden]{display:none}
+
+  /* ── TERMINAL (im Portfolio-Design) ── */
+  .terminal{
+    background:rgba(11,16,24,.88);
+    backdrop-filter:blur(8px);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+    margin-bottom:60px;
+    position:sticky; top:84px; z-index:9;
+    opacity:0;
+    transition:opacity 1.1s ease, box-shadow 1.1s ease;
+  }
+  .terminal.materialized{
+    opacity:1;
+    box-shadow:0 0 55px rgba(54,226,196,.12), 0 24px 70px rgba(0,0,0,.55);
+  }
+  .terminal.minimized{cursor:pointer}
+  .terminal.minimized .term-body{max-height:50px; overflow:hidden}
+  .terminal.compact .term-body{max-height:140px}
+  /* nach der Show: Konsole dockt als schwebendes HUD links unten an */
+  .terminal.docked-left{
+    position:fixed; left:22px; bottom:22px; top:auto;
+    width:min(360px,34vw); margin:0; z-index:14;
+    animation:dockLeft .8s cubic-bezier(.4,0,.2,1);
+  }
+  .terminal.docked-left.compact .term-body{max-height:min(74vh,720px)}
+  /* Minimieren (gelbe Ampel) hat Vorrang über compact/docked */
+  .terminal.minimized .term-body,
+  .terminal.docked-left.minimized .term-body{max-height:50px; overflow:hidden}
+  @keyframes dockLeft{
+    0%{opacity:0; transform:translateX(-26px) scale(.96)}
+    100%{opacity:1; transform:none}
+  }
+  @media(max-width:1024px){
+    .terminal.docked-left{
+      position:sticky; left:auto; bottom:auto; top:84px;
+      width:auto; margin-bottom:60px; animation:none;
+    }
+  }
+  /* terminal fully closes after the run-through */
+  .terminal.closing{
+    opacity:0 !important;
+    transform:translateY(-10px) scale(.985);
+    transition:opacity .8s ease, transform .8s ease, margin-bottom .8s ease, max-height .8s ease;
+    max-height:0; margin-bottom:0; pointer-events:none;
+  }
+  /* floating "reopen console" chip — programmer affordance */
+  .console-reopen{
+    position:fixed; bottom:22px; right:22px; z-index:15;
+    font-family:var(--mono); font-size:12px; letter-spacing:.5px;
+    color:var(--muted); background:rgba(11,16,24,.85); backdrop-filter:blur(8px);
+    border:1px solid var(--line); border-radius:4px;
+    padding:9px 14px; cursor:pointer;
+    display:none; align-items:center; gap:8px;
+    transition:color .25s, border-color .25s, transform .25s;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+  .console-reopen.show{display:inline-flex; animation:reopenIn .5s ease}
+  .console-reopen:hover{color:var(--accent); border-color:var(--accent); transform:translateY(-2px)}
+  @keyframes reopenIn{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)}}
+  .term-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:11px 16px;
+    background:rgba(255,255,255,.03);
+    border-bottom:1px solid var(--line);
+  }
+  .t-dot{
+    width:12px; height:12px; border-radius:50%; cursor:pointer;
+    position:relative; transition:filter .2s; outline:none;
+  }
+  .t-dot:nth-child(1){background:#ff5f57}
+  .t-dot:nth-child(2){background:#febc2e}
+  .t-dot:nth-child(3){background:#28c840}
+  .t-dot:hover{filter:brightness(1.18)}
+  .t-dot:focus-visible{box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+  /* macOS-Glyphen beim Hover über die Ampel */
+  .t-dot::after{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:10px; font-weight:700; line-height:1;
+    color:rgba(0,0,0,.65); opacity:0; transition:opacity .15s;
+  }
+  .term-bar:hover .t-dot::after{opacity:1}
+  #dotClose::after{content:'\00d7'}
+  #dotMin::after{content:'\2013'}
+  #dotZoom::after{content:'+'}
+  .term-title{
+    margin-left:10px; flex:1;
+    font-family:var(--mono); font-size:12px; letter-spacing:.5px;
+    color:var(--muted);
+  }
+  .skip-btn{
+    font-family:var(--mono); font-size:11px; letter-spacing:1px;
+    background:none; border:1px solid var(--line); color:var(--muted);
+    padding:4px 11px; border-radius:2px; cursor:pointer;
+    transition:.25s; text-transform:uppercase;
+  }
+  .skip-btn:hover,.skip-btn:focus-visible{border-color:var(--accent); color:var(--accent); outline:none}
+  .term-body{
+    padding:16px 18px;
+    font-family:var(--mono); font-size:12.5px; line-height:1.95;
+    max-height:230px; overflow-y:auto;
+    transition:max-height .5s ease;
+  }
+  .term-body::-webkit-scrollbar{width:6px}
+  .term-body::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px}
+  .log-line{white-space:pre-wrap; word-break:break-word; color:#aeb8c8}
+  .log-line .prompt{color:var(--accent)}
+  .log-line .ok{color:var(--accent)}
+  .log-line .run{color:var(--accent2)}
+  .log-line .info{color:var(--muted)}
+  .log-line .cosmic{color:#9aa8ff}
+  .log-line .err{color:#ff6b6b}
+  .cursor::after{content:'▌'; color:var(--accent); animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  /* interaktive Eingabezeile */
+  .log-line a{color:var(--accent); text-decoration:none; border-bottom:1px dotted rgba(54,226,196,.5)}
+  .log-line a:hover{color:#fff; border-color:#fff}
+  .log-line b{color:var(--fg); font-weight:700}
+  .cli-line{display:flex; align-items:center; gap:8px}
+  .cli-input{
+    flex:1; background:none; border:none; outline:none;
+    font-family:var(--mono); font-size:12.5px; color:var(--fg);
+    caret-color:var(--accent); padding:0;
+  }
+
+  /* ── COMMAND PALETTE (Cmd/Ctrl+K) ── */
+  .palette-backdrop{
+    position:fixed; inset:0; z-index:40;
+    background:rgba(3,5,10,.55); backdrop-filter:blur(3px);
+    display:none; align-items:flex-start; justify-content:center;
+  }
+  .palette-backdrop.open{display:flex}
+  .palette{
+    margin-top:14vh; width:min(560px,92vw);
+    background:rgba(11,16,24,.96); border:1px solid var(--line);
+    border-radius:8px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 50px rgba(54,226,196,.08);
+    animation:palIn .18s ease;
+  }
+  @keyframes palIn{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none}}
+  .palette input{
+    width:100%; background:none; border:none; outline:none;
+    padding:16px 18px; color:var(--fg);
+    font-family:var(--mono); font-size:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .palette input::placeholder{color:var(--muted)}
+  .pal-list{max-height:320px; overflow-y:auto; padding:6px}
+  .pal-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 14px; border-radius:5px; cursor:pointer;
+    font-family:var(--mono); font-size:13px; color:#c4ccd9;
+  }
+  .pal-item .pi-key{margin-left:auto; font-size:11px; color:var(--muted)}
+  .pal-item.active, .pal-item:hover{background:rgba(54,226,196,.1); color:var(--accent)}
+  .pal-list::-webkit-scrollbar{width:6px}
+  .pal-list::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px}
+
+  /* ── SKILL-TOOLTIP für 3D-Knoten ── */
+  #nodeTip{
+    position:fixed; z-index:13; pointer-events:none;
+    background:rgba(11,16,24,.95); border:1px solid var(--line);
+    border-radius:4px; padding:6px 10px;
+    font-family:var(--mono); font-size:11px; color:var(--accent);
+    letter-spacing:.5px; opacity:0; transform:translateY(4px);
+    transition:opacity .15s ease, transform .15s ease; white-space:nowrap;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  #nodeTip.show{opacity:1; transform:none}
+  #bg3d{cursor:default}
+
+  /* ── THEME: Amber-Variante ── */
+  body.amber{
+    --accent:#ffb347;
+    --accent2:#ff7a59;
+    --glow:rgba(255,179,71,.55);
+  }
+  body.amber ::selection{background:#ffb347; color:#231400}
+  /* sanfter Farbübergang beim Theme-Wechsel */
+  body, .btn, .chip, .card, nav a, .sec-label, .kicker,
+  .log-line .prompt, .log-line .ok{transition:color .5s ease, background-color .5s ease, border-color .5s ease}
+
+  /* ── SECTIONS: kondensieren aus dem Plasma ── */
+  .epoch-sec{
+    opacity:0;
+    filter:blur(12px) brightness(1.9) saturate(1.6);
+    transform:translateY(26px) scale(.985);
+    transition:opacity 1.3s ease, filter 1.5s ease, transform 1.3s ease;
+  }
+  .epoch-sec.deployed{
+    opacity:1;
+    filter:blur(0) brightness(1) saturate(1);
+    transform:none;
+  }
+  .epoch-sec[hidden]{display:none}
+
+  /* hero */
+  header.epoch-sec{
+    min-height:62vh; display:flex; flex-direction:column; justify-content:center;
+    margin-bottom:60px;
+  }
+  .kicker{
+    font-family:var(--mono); font-size:13px; letter-spacing:3px;
+    color:var(--accent); text-transform:uppercase; margin-bottom:22px;
+    opacity:0;
+  }
+  h1{
+    font-family:var(--display); font-weight:800; line-height:.95;
+    font-size:clamp(48px, 11vw, 132px); letter-spacing:-.03em;
+    margin-bottom:24px;
+  }
+  h1 .l1{ opacity:0; display:block; animation:titleGlow 3.4s ease-in-out infinite; }
+  h1 .l2{display:inline-block; color:transparent; position:relative;
+    background:linear-gradient(110deg,var(--accent),var(--accent2),var(--accent));
+    background-size:220% auto;
+    -webkit-background-clip:text; background-clip:text;
+    animation:gradFlow 6s linear infinite, titleGlow 3.4s ease-in-out infinite}
+  /* Glow-Unterstrich (zeichnet sich nach dem Decode ein) */
+  h1 .l2::after{
+    content:''; position:absolute; left:0; bottom:-8px; height:3px; width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    box-shadow:0 0 14px var(--glow); border-radius:2px;
+    transition:width .9s cubic-bezier(.4,0,.2,1);
+  }
+  h1 .l2.lined::after{ width:100% }
+  h1 .l2.typing::after{
+    content:'▌'; position:static; width:auto; height:auto;
+    background:none; box-shadow:none; border-radius:0;
+    -webkit-text-fill-color:var(--accent); color:var(--accent);
+    -webkit-background-clip:initial;
+    animation:blink 1s steps(1) infinite; margin-left:2px;
+  }
+  h1 .l2.scrambling{ color:var(--accent); -webkit-text-fill-color:var(--accent); background:none; }
+  @keyframes gradFlow{ to{ background-position:220% center } }
+  @keyframes titleGlow{
+    0%,100%{ filter:drop-shadow(0 0 1px transparent) }
+    50%{ filter:drop-shadow(0 0 14px var(--glow)) }
+  }
+  .sub{
+    max-width:560px; color:var(--muted); font-size:clamp(15px,2vw,19px);
+    font-weight:200; line-height:1.6; margin-bottom:40px;
+    opacity:0;
+  }
+
+  /* scanline sweep on section reveal */
+  .scan-sweep{
+    position:absolute; left:0; right:0; height:2px; top:0;
+    pointer-events:none; z-index:5;
+    background:linear-gradient(90deg,transparent 0%,var(--accent) 35%,var(--accent2) 65%,transparent 100%);
+    box-shadow:0 0 14px var(--accent);
+    animation:sweepDown .65s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  @keyframes sweepDown{
+    from{ top:0; opacity:1; }
+    to{ top:100%; opacity:0; }
+  }
+  .cta{display:flex; gap:16px; flex-wrap:wrap}
+  .btn{
+    font-family:var(--mono); font-size:13px; letter-spacing:.5px;
+    padding:15px 26px; border-radius:2px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:10px; transition:.3s;
+    border:1px solid var(--line);
+  }
+  .btn.primary{background:var(--accent); color:#04221d; font-weight:700; border-color:var(--accent)}
+  .btn.primary:hover{background:transparent; color:var(--accent); box-shadow:0 0 30px rgba(54,226,196,.25)}
+  .btn.ghost{color:var(--fg)}
+  .btn.ghost:hover{border-color:var(--accent); color:var(--accent)}
+
+  /* sections */
+  section{padding:60px 0; position:relative}
+  .sec-label{
+    font-family:var(--mono); font-size:12px; letter-spacing:3px; color:var(--accent);
+    text-transform:uppercase; margin-bottom:14px;
+  }
+  .sec-title{
+    font-size:clamp(28px,5vw,46px); font-weight:600; letter-spacing:-.02em;
+    margin-bottom:50px; display:inline-block; position:relative; color:transparent;
+    background:linear-gradient(110deg,var(--accent),var(--accent2),var(--accent));
+    background-size:220% auto;
+    -webkit-background-clip:text; background-clip:text;
+    animation:gradFlow 6s linear infinite, titleGlow 3.4s ease-in-out infinite;
+  }
+  .sec-title::after{
+    content:''; position:absolute; left:0; bottom:-12px; height:3px; width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    box-shadow:0 0 14px var(--glow); border-radius:2px;
+    transition:width .9s cubic-bezier(.4,0,.2,1);
+  }
+  #about.anim-in .sec-title::after,
+  #work.anim-in .sec-title::after{ width:100% }
+
+  .about-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:48px}
+  @media(max-width:760px){ .about-grid{grid-template-columns:1fr; gap:28px} }
+  .about p{color:#c4ccd9; font-weight:200; font-size:18px; line-height:1.8}
+  .about p+p{margin-top:18px}
+  .stack-box{
+    border:1px solid var(--line); background:var(--card); border-radius:4px; padding:26px;
+    position:relative; overflow:hidden;
+  }
+  .stack-box::after{
+    content:''; position:absolute; bottom:0; left:0; height:1px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    width:0%; transition:width 0.85s ease; pointer-events:none;
+  }
+  .stack-box.loaded::after{ width:100%; }
+  .stack-box h4{font-family:var(--mono); font-size:12px; letter-spacing:1px; color:var(--muted); margin-bottom:16px; text-transform:uppercase}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{
+    font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:2px;
+    border:1px solid var(--line); color:#cfd6e2; background:rgba(255,255,255,.02);
+  }
+  .chip.hl{border-color:rgba(54,226,196,.4); color:var(--accent)}
+
+  /* projects */
+  .projects{display:grid; gap:20px}
+  .card{
+    border:1px solid var(--line); background:var(--card); border-radius:6px;
+    padding:32px; display:grid; grid-template-columns:auto 1fr auto; gap:24px;
+    align-items:center; transition:.35s; text-decoration:none; color:inherit;
+    position:relative; overflow:hidden;
+  }
+  .card::before{
+    content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+    background:linear-gradient(var(--accent),var(--accent2)); transform:scaleY(0);
+    transform-origin:top; transition:transform .35s;
+  }
+  .card:hover{border-color:rgba(255,255,255,.18); transform:translateY(-3px); background:rgba(255,255,255,.04)}
+  .card:hover::before{transform:scaleY(1)}
+  .card .num{font-family:var(--mono); font-size:13px; color:var(--accent)}
+  .card .body h3{font-size:21px; font-weight:600; margin-bottom:8px}
+  .card .body p{color:var(--muted); font-weight:200; font-size:15px; line-height:1.6; margin-bottom:12px}
+  .card .body .tags{display:flex; flex-wrap:wrap; gap:7px}
+  .card .body .tags span{font-family:var(--mono); font-size:11px; color:#9fb0c4; border:1px solid var(--line); padding:4px 9px; border-radius:2px}
+  .card .arrow{font-family:var(--mono); font-size:22px; color:var(--muted); transition:.3s}
+  .card:hover .arrow{color:var(--accent); transform:translate(4px,-4px)}
+  @media(max-width:680px){
+    .card{grid-template-columns:1fr; gap:14px; padding:24px}
+    .card .arrow{display:none}
+  }
+
+  /* footer / contact */
+  footer{padding:80px 0 70px; text-align:center; position:relative; z-index:2}
+  footer .big{font-size:clamp(30px,6vw,64px); font-weight:800; letter-spacing:-.02em; margin-bottom:24px}
+  footer .big a{color:transparent; background:linear-gradient(110deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; text-decoration:none}
+  footer .meta{font-family:var(--mono); font-size:13px; color:var(--muted); display:flex; gap:22px; justify-content:center; flex-wrap:wrap}
+  footer .meta a{color:var(--muted); text-decoration:none; transition:.25s}
+  footer .meta a:hover{color:var(--accent)}
+  .copyright{margin-top:50px; font-family:var(--mono); font-size:11px; color:#4a5566}
+  .replay{
+    margin-top:18px; font-family:var(--mono); font-size:11px; letter-spacing:1px;
+    color:#4a5566; background:none; border:none; cursor:pointer;
+    text-transform:uppercase; transition:color .25s;
+  }
+  .replay:hover{color:var(--accent)}
+  .qr-wrap{
+    margin-top:36px; display:inline-flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .qr-wrap img{
+    width:120px; height:120px; border-radius:4px;
+    border:1px solid var(--line); padding:8px; background:#fff;
+    opacity:.85; transition:opacity .3s;
+  }
+  .qr-wrap img:hover{opacity:1}
+  .qr-wrap span{
+    font-family:var(--mono); font-size:11px; letter-spacing:1px;
+    color:var(--muted); text-transform:uppercase;
+  }
+
+  /* ── About & Projects reveal animations (CSS-driven, no JS race) ── */
+  @keyframes slideInLeft{
+    from{ opacity:0; transform:translateX(-22px); }
+    to  { opacity:1; transform:none; }
+  }
+  @keyframes popIn{
+    from{ opacity:0; transform:translateY(9px) scale(0.86); }
+    to  { opacity:1; transform:none; }
+  }
+  @keyframes slideUp{
+    from{ opacity:0; transform:translateY(28px); }
+    to  { opacity:1; transform:translateY(0); }
+  }
+  #about.anim-in .about p{ animation:slideInLeft .5s ease both; }
+  #about.anim-in .about p:nth-child(2){ animation-delay:.35s }
+  #about.anim-in .chip{ animation:popIn .22s ease both; }
+  #about.anim-in .chip:nth-child(1) {animation-delay:.60s}
+  #about.anim-in .chip:nth-child(2) {animation-delay:.65s}
+  #about.anim-in .chip:nth-child(3) {animation-delay:.70s}
+  #about.anim-in .chip:nth-child(4) {animation-delay:.75s}
+  #about.anim-in .chip:nth-child(5) {animation-delay:.80s}
+  #about.anim-in .chip:nth-child(6) {animation-delay:.85s}
+  #about.anim-in .chip:nth-child(7) {animation-delay:.90s}
+  #about.anim-in .chip:nth-child(8) {animation-delay:.95s}
+  #about.anim-in .chip:nth-child(9) {animation-delay:1.00s}
+  #about.anim-in .chip:nth-child(10){animation-delay:1.05s}
+  #about.anim-in .chip:nth-child(11){animation-delay:1.10s}
+  #about.anim-in .chip:nth-child(12){animation-delay:1.15s}
+  #about.anim-in .chip:nth-child(13){animation-delay:1.20s}
+  #about.anim-in .chip:nth-child(14){animation-delay:1.25s}
+  #work.anim-in .card{ animation:slideUp .42s ease both; }
+  #work.anim-in .card:nth-child(1){animation-delay:.14s}
+  #work.anim-in .card:nth-child(2){animation-delay:.28s}
+  #work.anim-in .card:nth-child(3){animation-delay:.43s}
+  #work.anim-in .card:nth-child(4){animation-delay:.57s}
+
+  @media (prefers-reduced-motion: reduce){
+    .epoch-sec{transition:none; filter:none; transform:none}
+    .terminal{transition:none}
+    .terminal.docked-left{animation:none}
+    .cursor::after{animation:none}
+    #intro .intro-hint{animation:none}
+    #cosmos.shake{animation:none}
+    #about.anim-in .about p,
+    #about.anim-in .chip,
+    #work.anim-in .card{ animation:none; opacity:1; transform:none; }
+    h1 .l1, h1 .l2, .sec-title{ animation:none }
+    h1 .l2::after, .sec-title::after{ transition:none }
+    #about .sec-title::after, #work .sec-title::after{ width:100% }
+  }
+
+  /* ── Kontaktformular ── */
+  .cf-title{
+    font-family:var(--mono); font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); text-align:center; margin-top:34px;
+  }
+  .contact-form{
+    max-width:560px; margin:16px auto 4px; display:flex; flex-direction:column; gap:14px; text-align:left;
+  }
+  .cf-row{display:flex; gap:14px}
+  @media(max-width:560px){ .cf-row{flex-direction:column} }
+  .contact-form input, .contact-form textarea{
+    width:100%; background:rgba(11,16,24,.6); color:var(--fg);
+    border:1px solid var(--line); border-radius:4px; padding:13px 15px;
+    font-family:var(--mono); font-size:13.5px; outline:none; resize:vertical;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  .contact-form input::placeholder, .contact-form textarea::placeholder{color:var(--muted)}
+  .contact-form input:focus, .contact-form textarea:focus{
+    border-color:var(--accent); box-shadow:0 0 0 3px rgba(54,226,196,.12);
+  }
+  .cf-hp{position:absolute !important; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none}
+  .cf-send{justify-content:center; cursor:pointer}
+  .cf-send[disabled]{opacity:.6; cursor:default}
+  .cf-status{font-family:var(--mono); font-size:12.5px; min-height:18px; letter-spacing:.3px}
+  .cf-status.ok{color:var(--accent)}
+  .cf-status.err{color:#ff6b6b}
+</style>
+</head>
+<body class="locked">
+<canvas id="bg3d"></canvas>
+<canvas id="cosmos"></canvas>
+<div class="grain"></div>
+<div class="overlay"></div>
+<div id="flash"></div>
+
+<!-- ── INTRO ── -->
+<div id="intro">
+  <div class="intro-kicker" data-i18n="intro_kicker">t = 0 — before the first commit</div>
+  <div class="intro-hint" data-i18n="intro_hint">click to initialize universe</div>
+</div>
+
+<nav>
+  <div class="brand">Andreas<b>.</b>Jung</div>
+  <div class="links">
+    <a href="#about" data-i18n="nav_about">// about</a>
+    <a href="#work" data-i18n="nav_work">// work</a>
+    <a href="#contact" data-i18n="nav_contact">// contact</a>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLang()">DE</button>
+  </div>
+</nav>
+
+<div class="wrap" id="page" hidden>
+
+  <!-- ── TERMINAL: wird von den Urknall-Partikeln gebaut ── -->
+  <div class="terminal" id="terminal">
+    <div class="term-bar">
+      <span class="t-dot" id="dotClose" role="button" tabindex="0" title="schließen" aria-label="Konsole schließen"></span><span class="t-dot" id="dotMin" role="button" tabindex="0" title="minimieren" aria-label="Konsole minimieren"></span><span class="t-dot" id="dotZoom" role="button" tabindex="0" title="Originalgröße" aria-label="Originalgröße"></span>
+      <span class="term-title">AJ@universe:~$ — bigbang.sh</span>
+      <button class="skip-btn" id="skipBtn">skip ▸▸</button>
+    </div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+
+  <!-- hero -->
+  <header class="epoch-sec" id="sec-hero" hidden>
+    <div class="kicker" data-i18n="kicker">Cloud-Native · Security · Backend</div>
+    <h1><span class="l1">Software</span><span class="l2" id="heroType">Engineer.</span></h1>
+    <p class="sub" data-i18n="sub">Computer Science graduate with a focus on distributed systems,
+      microservices, and Zero-Trust security. I build software that runs reliably,
+      from architecture to deployment.</p>
+    <div class="cta">
+      <a class="btn ghost" href="#work" data-i18n="btn_projects">View Projects</a>
+    </div>
+  </header>
+
+  <!-- about -->
+  <section id="about" class="epoch-sec" hidden>
+    <div class="sec-label" data-i18n="about_label">/ 01 — about</div>
+    <div class="sec-title" data-i18n="about_title">About Me</div>
+    <div class="about-grid">
+      <div class="about">
+        <p data-i18n="about_p1">I hold a Bachelor's degree in Computer Science from Hochschule Kaiserslautern. My focus is on cloud-native architectures and IT security, which I explored in depth during my thesis on Zero-Trust microservices based on NIST SP 800-207.</p>
+        <p data-i18n="about_p2">Before university I worked in electrical engineering, including at BASF SE.
+          That experience working with safety-critical systems still shapes the
+          precision and care I bring to software today.</p>
+      </div>
+      <div class="stack-box">
+        <h4 data-i18n="stack_title">Tech Stack</h4>
+        <div class="chips">
+          <span class="chip hl">Java</span>
+          <span class="chip hl">Spring Boot</span>
+          <span class="chip">Python</span>
+          <span class="chip">JavaScript</span>
+          <span class="chip">HTML / CSS</span>
+          <span class="chip">SQL / JDBC</span>
+          <span class="chip hl">Docker</span>
+          <span class="chip hl">Kubernetes</span>
+          <span class="chip">Git / CI/CD</span>
+          <span class="chip">Google Cloud</span>
+          <span class="chip hl">Zero Trust / Keycloak</span>
+          <span class="chip">Android Studio</span>
+          <span class="chip">Arduino / VHDL</span>
+          <span class="chip">Maven</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- work -->
+  <section id="work" class="epoch-sec" hidden>
+    <div class="sec-label" data-i18n="work_label">/ 02 — work</div>
+    <div class="sec-title" data-i18n="work_title">Selected Projects</div>
+    <div class="projects">
+      <a class="card" href="https://github.com/CC-X5/Code-Zero-Trust-Prinzipien" target="_blank" rel="noopener">
+        <div class="num">001</div>
+        <div class="body">
+          <h3 data-i18n="p1_title">Zero-Trust Architectures for Microservices</h3>
+          <p data-i18n="p1_desc">Bachelor's thesis: four Zero-Trust approaches based on NIST SP 800-207
+            compared and fully implemented: Service Mesh, API Gateway,
+            Identity Provider, and ZTNA Policy Engine.</p>
+          <div class="tags"><span>Java 21</span><span>Spring Boot 3.2</span><span>Istio</span><span>Keycloak</span><span>Kubernetes</span></div>
+        </div>
+        <div class="arrow">↗</div>
+      </a>
+      <a class="card" href="https://github.com/CC-X5/Serverless-Function-Runner" target="_blank" rel="noopener">
+        <div class="num">002</div>
+        <div class="body">
+          <h3 data-i18n="p2_title">Serverless Function Runner (FaaS)</h3>
+          <p data-i18n="p2_desc">Cloud-native platform for executing functions in isolated containers.
+            Microservice architecture with Gateway, Registry, and Executor,
+            deployed on Google Kubernetes Engine.</p>
+          <div class="tags"><span>Docker</span><span>Kubernetes</span><span>RabbitMQ</span><span>PostgreSQL</span><span>MinIO</span><span>CI/CD</span></div>
+        </div>
+        <div class="arrow">↗</div>
+      </a>
+      <a class="card" href="https://github.com/CC-X5/chat-module-project" target="_blank" rel="noopener">
+        <div class="num">003</div>
+        <div class="body">
+          <h3 data-i18n="p3_title">WebSocket Chat Module (npm)</h3>
+          <p data-i18n="p3_desc">Production-ready Node.js module for a WebSocket chat server,
+            built during a practical study phase. Features server-side hooks
+            for extensibility and API key authentication.</p>
+          <div class="tags"><span>Node.js</span><span>Express</span><span>WebSockets</span><span>npm</span></div>
+        </div>
+        <div class="arrow">↗</div>
+      </a>
+      <div class="card" style="cursor:default">
+        <div class="num">004</div>
+        <div class="body">
+          <h3 data-i18n="p4_title">Mail Service &amp; Rental/Inventory System</h3>
+          <p data-i18n="p4_desc">Personal project supporting student self-governance (Gremien): automated
+            email dispatch with PayPal payment integration, plus a web app for managing
+            rental items (board games, 3D-printed parts) with QR-code-based cross-device
+            workflow and camera-assisted photo capture.</p>
+          <div class="tags"><span>Java</span><span>Spring Boot</span><span>PayPal API</span><span>QR Code</span><span data-i18n="p4_date">Oct 2025 – present</span></div>
+        </div>
+        <div class="arrow" style="color:var(--muted);opacity:.3">🔒</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- contact -->
+  <footer id="contact" class="epoch-sec" hidden>
+    <div class="sec-label" style="text-align:center" data-i18n="contact_label">/ 03 — contact</div>
+    <div class="big"><span data-i18n="contact_big">Let's talk.</span><br><a href="mailto:AJ-PV5@proton.me">AJ-PV5@proton.me</a></div>
+
+    <div class="cf-title" data-i18n="form_title">Or drop a message</div>
+    <form id="contactForm" class="contact-form" novalidate>
+      <div class="cf-row">
+        <input type="text" id="cfName" name="name" required maxlength="80" autocomplete="name" data-i18n-ph="form_name_ph" placeholder="Your name">
+        <input type="email" id="cfEmail" name="email" required maxlength="120" autocomplete="email" data-i18n-ph="form_email_ph" placeholder="you@example.com">
+      </div>
+      <textarea id="cfMsg" name="message" required rows="4" maxlength="3000" data-i18n-ph="form_msg_ph" placeholder="Your message…"></textarea>
+      <input type="checkbox" name="botcheck" class="cf-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button type="submit" class="btn primary cf-send" id="cfSend"><span data-i18n="form_send">Send message</span></button>
+      <div class="cf-status" id="cfStatus" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="meta">
+      <a href="https://github.com/CC-X5" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:AJ-PV5@proton.me">E-Mail</a>
+      <span>Zweibrücken, DE</span>
+    </div>
+    <div class="qr-wrap">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fcc-x5.github.io&bgcolor=ffffff&color=000000&margin=0" alt="QR code — cc-x5.github.io" loading="lazy">
+      <span data-i18n="qr_caption">scan to visit</span>
+    </div>
+    <div class="copyright" data-i18n="copyright">© 2026 Andreas Jung · forged in a big bang</div>
+    <button class="replay" id="replayBtn" data-i18n="replay">↺ replay big bang</button>
+  </footer>
+
+</div>
+
+<button class="console-reopen" id="consoleReopen" data-i18n="reopen_console">›_ console</button>
+
+<!-- Command Palette (Cmd/Ctrl+K) -->
+<div class="palette-backdrop" id="paletteBackdrop">
+  <div class="palette" role="dialog" aria-modal="true">
+    <input id="paletteInput" type="text" data-i18n-ph="palette_ph" placeholder="Jump to… (try 'projects', 'cv', 'theme')" autocomplete="off" spellcheck="false">
+    <div class="pal-list" id="paletteList"></div>
+  </div>
+</div>
+
+<!-- 3D node skill tooltip -->
+<div id="nodeTip"></div>
+
+<script>
+/* ════════════════ i18n ════════════════ */
+const translations = {
+  en: {
+    intro_kicker: 't = 0 — before the first commit',
+    intro_hint:   'click to initialize universe',
+    replay:       '↺ replay big bang',
+    reopen_console: '›_ console',
+    palette_ph: "Jump to… (try 'projects', 'cv', 'theme')",
+    pal_hero: 'Top / Hero',
+    pal_about: 'About',
+    pal_work: 'Projects',
+    pal_contact: 'Contact',
+    pal_github: 'Open GitHub',
+    pal_theme: 'Toggle theme',
+    pal_lang: 'Switch language',
+    pal_console: 'Open console',
+    status_deploy: 'deploying',
+    status_live: 'operational',
+    nav_about:    '// about',
+    nav_work:     '// work',
+    nav_contact:  '// contact',
+    kicker:       'Cloud-Native · Security · Backend',
+    sub:          'Computer Science graduate with a focus on distributed systems, microservices, and Zero-Trust security. I build software that runs reliably, from architecture to deployment.',
+    btn_projects: 'View Projects',
+    about_label:  '/ 01 — about',
+    about_title:  'About Me',
+    about_p1:     "I hold a Bachelor's degree in Computer Science from Hochschule Kaiserslautern. My focus is on cloud-native architectures and IT security, which I explored in depth during my thesis on Zero-Trust microservices based on NIST SP 800-207.",
+    about_p2:     'Before university I worked in electrical engineering, including at BASF SE. That experience working with safety-critical systems still shapes the precision and care I bring to software today.',
+    stack_title:  'Tech Stack',
+    work_label:   '/ 02 — work',
+    work_title:   'Selected Projects',
+    p1_title:     'Zero-Trust Architectures for Microservices',
+    p1_desc:      "Bachelor's thesis: four Zero-Trust approaches based on NIST SP 800-207 compared and fully implemented: Service Mesh, API Gateway, Identity Provider, and ZTNA Policy Engine.",
+    p2_title:     'Serverless Function Runner (FaaS)',
+    p2_desc:      'Cloud-native platform for executing functions in isolated containers. Microservice architecture with Gateway, Registry, and Executor, deployed on Google Kubernetes Engine.',
+    p3_title:     'WebSocket Chat Module (npm)',
+    p3_desc:      'Production-ready Node.js module for a WebSocket chat server, built during a practical study phase. Features server-side hooks for extensibility and API key authentication.',
+    p4_title:     'Mail Service & Rental/Inventory System',
+    p4_desc:      'Personal project supporting student self-governance (Gremien): automated email dispatch with PayPal payment integration, plus a web app for managing rental items (board games, 3D-printed parts) with QR-code-based cross-device workflow and camera-assisted photo capture.',
+    p4_date:      'Oct 2025 – present',
+    contact_label:'/ 03 — contact',
+    contact_big:  "Let's talk.",
+    qr_caption:   'scan to visit',
+    form_title:   'Or drop a message',
+    form_name_ph: 'Your name',
+    form_email_ph:'you@example.com',
+    form_msg_ph:  'Your message…',
+    form_send:    'Send message',
+    copyright:    '© 2026 Andreas Jung · forged in a big bang',
+    /* terminal lines */
+    t_assembled:  '<span class="cosmic">[t+10⁻⁴³s]</span> terminal assembled from debris · stdin connected',
+    t_cmd:        './bigbang.sh --deploy=portfolio',
+    t_inflation:  '<span class="cosmic">[t+10⁻³⁶s]</span> inflation: space expands ×10²⁶ — <span class="run">profile expanding with it</span>',
+    t_hero_ok:    '<span class="ok">          ✓ andreas.jung</span> condensed · software engineer online',
+    t_nucleo:     '<span class="cosmic">[t+3min]</span> nucleosynthesis: first elements fuse — pulling tech stack',
+    t_about_ok:   '<span class="ok">          ✓ 14 elements stable</span> · Java, Docker, K8s, Zero Trust ...',
+    t_recomb:     '<span class="cosmic">[t+380ky]</span> recombination: structures become visible — kubectl apply -f projects.yaml',
+    t_work_ok:    '<span class="ok">          ✓ 4 services deployed</span> · zero-trust MERGED · faas RUNNING',
+    t_today:      '<span class="cosmic">[today]</span> a consciousness opens this page. running health check ...',
+    t_release:    '<span class="ok">[release] ✓ 200 OK</span> — 13.8 billion years of build time, 0 failed jobs.',
+    t_done:       '<span class="prompt">AJ@universe:~$</span> <span class="info"># scroll through the epochs ▼</span>'
+  },
+  de: {
+    intro_kicker: 't = 0 — vor dem ersten Commit',
+    intro_hint:   'klicken, um das Universum zu initialisieren',
+    replay:       '↺ Urknall wiederholen',
+    reopen_console: '›_ Konsole',
+    palette_ph: "Springe zu… (z.B. 'projekte', 'cv', 'theme')",
+    pal_hero: 'Anfang / Hero',
+    pal_about: 'Über mich',
+    pal_work: 'Projekte',
+    pal_contact: 'Kontakt',
+    pal_github: 'GitHub öffnen',
+    pal_theme: 'Theme wechseln',
+    pal_lang: 'Sprache wechseln',
+    pal_console: 'Konsole öffnen',
+    status_deploy: 'wird ausgerollt',
+    status_live: 'betriebsbereit',
+    nav_about:    '// über mich',
+    nav_work:     '// projekte',
+    nav_contact:  '// kontakt',
+    kicker:       'Cloud-Native · Sicherheit · Backend',
+    sub:          'Informatik-Absolvent mit Schwerpunkt auf verteilten Systemen, Microservices und Zero-Trust-Sicherheit. Ich entwickle Software, die zuverlässig läuft – von der Architektur bis zum Deployment.',
+    btn_projects: 'Projekte ansehen',
+    about_label:  '/ 01 — über mich',
+    about_title:  'Über mich',
+    about_p1:     'Ich habe meinen Bachelor in Informatik an der Hochschule Kaiserslautern abgeschlossen. Mein Schwerpunkt liegt auf Cloud-nativen Architekturen und IT-Sicherheit, die ich in meiner Abschlussarbeit über Zero-Trust-Microservices auf Basis von NIST SP 800-207 vertieft habe.',
+    about_p2:     'Vor dem Studium arbeitete ich in der Elektrotechnik, unter anderem bei der BASF SE. Diese Erfahrung mit sicherheitskritischen Systemen prägt noch heute die Sorgfalt und Präzision, die ich in die Softwareentwicklung einbringe.',
+    stack_title:  'Tech Stack',
+    work_label:   '/ 02 — projekte',
+    work_title:   'Ausgewählte Projekte',
+    p1_title:     'Zero-Trust-Architekturen für Microservices',
+    p1_desc:      'Bachelorarbeit: Vier Zero-Trust-Ansätze auf Basis von NIST SP 800-207 verglichen und vollständig implementiert: Service Mesh, API Gateway, Identity Provider und ZTNA Policy Engine.',
+    p2_title:     'Serverless Function Runner (FaaS)',
+    p2_desc:      'Cloud-native Plattform zur Ausführung von Funktionen in isolierten Containern. Microservice-Architektur mit Gateway, Registry und Executor, deployed auf Google Kubernetes Engine.',
+    p3_title:     'WebSocket Chat Modul (npm)',
+    p3_desc:      'Produktionsreifes Node.js-Modul für einen WebSocket-Chat-Server, entwickelt während einer Praxisphase. Bietet serverseitige Hooks für Erweiterbarkeit und API-Key-Authentifizierung.',
+    p4_title:     'Mail-Service & Verleih-/Inventarsystem',
+    p4_desc:      'Eigenprojekt zur Unterstützung der studentischen Selbstverwaltung (Gremien): Automatisierter E-Mail-Versand mit PayPal-Zahlungsabwicklung sowie Web-Anwendung zur Verwaltung von Verleihobjekten (Brettspiele, 3D-Druck-Teile) mit QR-Code-basiertem Cross-Device-Workflow und kameragestützter Foto-Erfassung.',
+    p4_date:      'Okt. 2025 – heute',
+    contact_label:'/ 03 — kontakt',
+    contact_big:  'Lass uns reden.',
+    qr_caption:   'Scannen zum Besuchen',
+    form_title:   'Oder schreib mir',
+    form_name_ph: 'Dein Name',
+    form_email_ph:'du@beispiel.de',
+    form_msg_ph:  'Deine Nachricht…',
+    form_send:    'Nachricht senden',
+    copyright:    '© 2026 Andreas Jung · geschmiedet in einem Urknall',
+    /* terminal lines */
+    t_assembled:  '<span class="cosmic">[t+10⁻⁴³s]</span> Terminal aus Trümmern assembliert · stdin verbunden',
+    t_cmd:        './bigbang.sh --deploy=portfolio',
+    t_inflation:  '<span class="cosmic">[t+10⁻³⁶s]</span> Inflation: Raum expandiert ×10²⁶ — <span class="run">Profil expandiert mit</span>',
+    t_hero_ok:    '<span class="ok">          ✓ andreas.jung</span> kondensiert · Software Engineer online',
+    t_nucleo:     '<span class="cosmic">[t+3min]</span> Nukleosynthese: erste Elemente fusionieren — Tech Stack wird geladen',
+    t_about_ok:   '<span class="ok">          ✓ 14 Elemente stabil</span> · Java, Docker, K8s, Zero Trust ...',
+    t_recomb:     '<span class="cosmic">[t+380kJ]</span> Rekombination: Strukturen werden sichtbar — kubectl apply -f projekte.yaml',
+    t_work_ok:    '<span class="ok">          ✓ 4 Services deployed</span> · zero-trust MERGED · faas RUNNING',
+    t_today:      '<span class="cosmic">[heute]</span> Ein Bewusstsein öffnet diese Seite. Health check läuft ...',
+    t_release:    '<span class="ok">[release] ✓ 200 OK</span> — 13,8 Mrd. Jahre Build-Zeit, 0 failed jobs.',
+    t_done:       '<span class="prompt">AJ@universe:~$</span> <span class="info"># Scroll durch die Epochen ▼</span>'
+  }
+};
+
+let currentLang = 'en';
+function applyLang(lang){
+  currentLang = lang;
+  const t = translations[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(t[key] !== undefined) el.textContent = t[key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-ph');
+    if(t[key] !== undefined) el.placeholder = t[key];
+  });
+  const btn = document.getElementById('langToggle');
+  if(btn) btn.textContent = lang === 'de' ? 'EN' : 'DE';
+  // Palette + Status mitziehen, falls vorhanden
+  if(window.__rebuildPalette) window.__rebuildPalette();
+  if(window.__refreshStatus) window.__refreshStatus();
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+}
+function toggleLang(){ applyLang(currentLang === 'de' ? 'en' : 'de'); }
+
+/* ════════ THEME TOGGLE (teal ↔ amber, persistiert) ════════ */
+function applyTheme(theme){
+  document.body.classList.toggle('amber', theme === 'amber');
+  try{ localStorage.setItem('theme', theme); }catch(e){}
+}
+function toggleTheme(){
+  applyTheme(document.body.classList.contains('amber') ? 'teal' : 'amber');
+}
+(function(){
+  try{
+    const saved = localStorage.getItem('theme');
+    if(saved === 'amber') document.body.classList.add('amber');
+  }catch(e){}
+})();
+(function(){
+  let lang = 'en';
+  try{
+    const saved = localStorage.getItem('lang');
+    if(saved === 'de' || saved === 'en') lang = saved;
+    else if((navigator.language||'').toLowerCase().startsWith('de')) lang = 'de';
+  }catch(e){
+    if((navigator.language||'').toLowerCase().startsWith('de')) lang = 'de';
+  }
+  applyLang(lang);
+})();
+
+/* ════════ LIVING NETWORK SPHERE (three.js background) ════════
+   Übernommen aus der Original-Portfolioseite: rotierende Knoten-
+   Sphäre mit Verbindungslinien + Sternenstaub + Maus-Parallax.
+   Startet erst nach dem Urknall (startBg3d) und läuft dann dauerhaft. */
+let __bg3dStarted = false;
+function startBg3d(){
+  if(__bg3dStarted) return;
+  if(typeof THREE === 'undefined') return;       // CDN nicht geladen → still überspringen
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  __bg3dStarted = true;
+
+  const canvas = document.getElementById('bg3d');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x06080d, 0.055);
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.z = 14;
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const NODES = 90, R = 9;
+  const nodeBase = [], nodePos = [];
+  for(let i=0;i<NODES;i++){
+    const phi = Math.acos(1 - 2*(i+0.5)/NODES);
+    const theta = Math.PI*(1+Math.sqrt(5))*i;
+    const r = R * (0.55 + 0.45*Math.random());
+    const x = r*Math.sin(phi)*Math.cos(theta);
+    const y = r*Math.sin(phi)*Math.sin(theta);
+    const z = r*Math.cos(phi);
+    nodeBase.push(new THREE.Vector3(x,y,z));
+    nodePos.push(new THREE.Vector3(x,y,z));
+  }
+
+  const ptGeo = new THREE.BufferGeometry();
+  ptGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NODES*3),3));
+  const points = new THREE.Points(ptGeo, new THREE.PointsMaterial({
+    color:0x36e2c4, size:0.22, transparent:true, opacity:0.9,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  group.add(points);
+
+  // einige Knoten tragen Skill-Labels (Hover → Tooltip)
+  const SKILLS = ['Kubernetes','Docker','Zero Trust','Spring Boot','Java','Google Cloud',
+                  'CI/CD','Keycloak','PostgreSQL','RabbitMQ','Istio','Python','Helm','Linux'];
+  const nodeSkill = new Array(NODES).fill(null);
+  for(let s=0; s<SKILLS.length; s++){
+    nodeSkill[Math.floor((s+0.5)/SKILLS.length*NODES)] = SKILLS[s];
+  }
+
+  const pairs = [];
+  for(let i=0;i<NODES;i++)
+    for(let j=i+1;j<NODES;j++)
+      if(nodeBase[i].distanceTo(nodeBase[j]) < 3.4) pairs.push([i,j]);
+  const lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pairs.length*6),3));
+  const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
+    color:0x5b8cff, transparent:true, opacity:0.16,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  group.add(lines);
+
+  const DUST = 350;
+  const dustGeo = new THREE.BufferGeometry();
+  const dustArr = new Float32Array(DUST*3);
+  const dustPhase = [];
+  for(let i=0;i<DUST;i++){
+    dustArr[i*3]   = (Math.random()-0.5)*40;
+    dustArr[i*3+1] = (Math.random()-0.5)*40;
+    dustArr[i*3+2] = (Math.random()-0.5)*30 - 5;
+    dustPhase.push(Math.random()*Math.PI*2);
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustArr,3));
+  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+    color:0xffffff, size:0.05, transparent:true, opacity:0.35, depthWrite:false
+  }));
+  scene.add(dust);
+
+  let px=0, py=0, tx=0, ty=0;
+  let mouseX=-10, mouseY=-10, mouseClientX=0, mouseClientY=0;
+  window.addEventListener('pointermove', e=>{
+    tx = (e.clientX/window.innerWidth - 0.5);
+    ty = (e.clientY/window.innerHeight - 0.5);
+    mouseX = (e.clientX/window.innerWidth)*2 - 1;
+    mouseY = -(e.clientY/window.innerHeight)*2 + 1;
+    mouseClientX = e.clientX; mouseClientY = e.clientY;
+  });
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Points.threshold = 0.6;
+  const tipEl = document.getElementById('nodeTip');
+  let tipFrame = 0;
+
+  const PERIOD = 24, start = performance.now();
+  function frame(now){
+    const elapsed = (now - start)/1000;
+    const ang = ((elapsed % PERIOD) / PERIOD) * Math.PI * 2;
+    group.rotation.y = ang;
+    group.rotation.x = Math.sin(ang) * 0.18;
+
+    const pa = points.geometry.attributes.position.array;
+    for(let i=0;i<NODES;i++){
+      const b = nodeBase[i];
+      const pulse = 1 + 0.06*Math.sin(ang*2 + i*0.5);
+      nodePos[i].set(b.x*pulse, b.y*pulse, b.z*pulse);
+      pa[i*3]=nodePos[i].x; pa[i*3+1]=nodePos[i].y; pa[i*3+2]=nodePos[i].z;
+    }
+    points.geometry.attributes.position.needsUpdate = true;
+
+    const la = lines.geometry.attributes.position.array;
+    for(let k=0;k<pairs.length;k++){
+      const a = nodePos[pairs[k][0]], b = nodePos[pairs[k][1]];
+      la[k*6]=a.x; la[k*6+1]=a.y; la[k*6+2]=a.z;
+      la[k*6+3]=b.x; la[k*6+4]=b.y; la[k*6+5]=b.z;
+    }
+    lines.geometry.attributes.position.needsUpdate = true;
+
+    const da = dust.geometry.attributes.position.array;
+    for(let i=0;i<DUST;i++) da[i*3+1] += Math.sin(ang + dustPhase[i])*0.002;
+    dust.geometry.attributes.position.needsUpdate = true;
+    dust.rotation.y = ang*0.3;
+
+    px += (tx-px)*0.04; py += (ty-py)*0.04;
+    camera.position.x = px*4; camera.position.y = -py*4;
+    camera.lookAt(0,0,0);
+
+    // Skill-Tooltip: nur ~alle 4 Frames raycasten (Performance)
+    if(tipEl && (++tipFrame % 4 === 0)){
+      raycaster.setFromCamera({x:mouseX, y:mouseY}, camera);
+      const hits = raycaster.intersectObject(points);
+      let label = null;
+      if(hits.length){
+        // nächstgelegenen getroffenen Knoten mit Label finden
+        for(const h of hits){
+          if(h.index != null && nodeSkill[h.index]){ label = nodeSkill[h.index]; break; }
+        }
+      }
+      if(label){
+        tipEl.textContent = label;
+        tipEl.style.left = (mouseClientX + 14) + 'px';
+        tipEl.style.top  = (mouseClientY + 14) + 'px';
+        tipEl.classList.add('show');
+      } else {
+        tipEl.classList.remove('show');
+      }
+    }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  window.__getBg3dNodePositions = function(){
+    const positions = [];
+    const v = new THREE.Vector3();
+    for(let i = 0; i < NODES; i++){
+      v.copy(nodePos[i]);
+      group.localToWorld(v);
+      v.project(camera);
+      if(v.z >= 1) continue;
+      positions.push({
+        x: (v.x + 1) / 2 * window.innerWidth,
+        y: (-v.y + 1) / 2 * window.innerHeight
+      });
+    }
+    return positions;
+  };
+}
+
+/* ════════════════ URKNALL + CLI ════════════════ */
+(() => {
+  const canvas = document.getElementById('cosmos');
+  const ctx = canvas.getContext('2d');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let seen = false;
+  try{ seen = sessionStorage.getItem('bangSeen') === '1'; }catch(e){}
+
+  let W,H,CX,CY,dpr;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = innerWidth; H = innerHeight;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    CX = W/2; CY = H/2 - 60;
+  }
+  resize();
+  addEventListener('resize', resize);
+
+  // phase: singularity → bang → assemble → universe
+  let phase = 'singularity';
+  let t = 0, bangStart = 0, assembleStart = 0;
+  let particles = [], shockwaves = [];
+  let secondBurstDone = false, thirdBurstDone = false;
+  const rand = (a,b)=>a+Math.random()*(b-a);
+
+  function makeParticles(n, speedScale){
+    const out = [];
+    for(let i=0;i<n;i++){
+      const a = Math.random()*Math.PI*2;
+      const s = (Math.pow(Math.random(),2.4)*18+0.35)*speedScale;
+      out.push({
+        x:CX,y:CY,
+        vx:Math.cos(a)*s, vy:Math.sin(a)*s,
+        life:rand(.5,1), size:rand(.5,2.2),
+        spin:rand(-.016,.016),
+        settled:false,
+        mode:'free', tx:0, ty:0, delay:0
+      });
+    }
+    return out;
+  }
+
+  function spawnBang(){
+    particles = makeParticles(reduced ? 350 : (W<600 ? 1500 : 2800), 1);
+    shockwaves = [
+      {r:0,v:16,w:4,a:.9,c:'232,255,250'},
+      {r:0,v:10,w:9,a:.55,c:'54,226,196'},
+      {r:0,v:6,w:16,a:.32,c:'91,140,255'}
+    ];
+    secondBurstDone = thirdBurstDone = false;
+  }
+
+  // Abkühlung: weißglut → teal → blau (Portfolio-Palette)
+  function coolColor(p, age){
+    const heat = Math.max(0, 1-age*.5)*p.life;
+    if(heat>.75) return '236,255,250';
+    if(heat>.5)  return '140,240,220';
+    if(heat>.3)  return '54,226,196';
+    if(heat>.15) return '91,140,255';
+    return '120,150,230';
+  }
+
+  /* ── Terminal-Silhouette samplen (Partikel-Ziele) ── */
+  function sampleTerminalShape(rect){
+    const off = document.createElement('canvas');
+    off.width = Math.ceil(rect.width);
+    off.height = Math.ceil(rect.height);
+    const o = off.getContext('2d');
+    o.fillStyle = '#fff'; o.strokeStyle = '#fff';
+
+    // Fensterrahmen
+    o.lineWidth = 2.5;
+    roundRect(o, 1.5, 1.5, off.width-3, off.height-3, 6);
+    o.stroke();
+    // Titelleisten-Trenner
+    o.lineWidth = 1.5;
+    o.beginPath(); o.moveTo(2, 40); o.lineTo(off.width-2, 40); o.stroke();
+    // Ampel
+    [17, 36, 55].forEach(x=>{
+      o.beginPath(); o.arc(x, 20, 5, 0, Math.PI*2); o.fill();
+    });
+    // Titel
+    o.font = '700 11px "Space Mono", monospace';
+    o.fillText('AJ@universe:~$', 74, 24);
+    // Kommandozeile
+    o.font = '700 16px "Space Mono", monospace';
+    const cmd = W < 600 ? '$ ./bigbang.sh' : '$ ./bigbang.sh --deploy=portfolio';
+    o.fillText(cmd, 18, 74);
+
+    const step = W < 600 ? 4 : 3;
+    const img = o.getImageData(0,0,off.width,off.height).data;
+    const pts = [];
+    for(let y=0; y<off.height; y+=step){
+      for(let x=0; x<off.width; x+=step){
+        if(img[(y*off.width+x)*4+3] > 100){
+          pts.push({x: rect.left + x, y: rect.top + y});
+        }
+      }
+    }
+    return pts;
+  }
+  function roundRect(c,x,y,w,h,r){
+    c.beginPath();
+    c.moveTo(x+r,y);
+    c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);
+    c.arcTo(x,y+h,x,y,r);
+    c.arcTo(x,y,x+w,y,r);
+    c.closePath();
+  }
+  function assignTargets(pts){
+    for(let i=pts.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [pts[i],pts[j]] = [pts[j],pts[i]];
+    }
+    const n = Math.min(pts.length, particles.length);
+    for(let i=0;i<n;i++){
+      const p = particles[i];
+      p.mode = 'target';
+      p.tx = pts[i].x; p.ty = pts[i].y;
+      p.delay = (i/n) * 1100;
+      p.settled = false;
+    }
+  }
+
+  /* ── Zeichnen ── */
+  function drawSingularity(){
+    ctx.clearRect(0,0,W,H);
+    t += .016;
+    const cy = H/2 - 40;
+    const r = 7*(1+Math.sin(t*2.4)*.18);
+    for(let i=0;i<3;i++){
+      const rr = r+14+i*9+Math.sin(t*3+i)*4;
+      ctx.beginPath(); ctx.arc(CX,cy,rr,0,Math.PI*2);
+      ctx.strokeStyle = `rgba(${i===0?'54,226,196':i===1?'91,140,255':'232,255,250'},${.22-i*.05})`;
+      ctx.lineWidth = 1; ctx.stroke();
+    }
+    const g = ctx.createRadialGradient(CX,cy,0,CX,cy,r*9);
+    g.addColorStop(0,'rgba(255,255,255,1)');
+    g.addColorStop(.15,'rgba(190,255,240,.9)');
+    g.addColorStop(.4,'rgba(54,226,196,.3)');
+    g.addColorStop(1,'rgba(91,140,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(CX,cy,r*9,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(CX,cy,r,0,Math.PI*2); ctx.fill();
+    if(!reduced && Math.random()<.04){
+      ctx.fillStyle = 'rgba(255,255,255,.05)';
+      ctx.fillRect(0,0,W,H);
+    }
+  }
+
+  function drawParticles(now){
+    const age = (now-bangStart)/1000;
+    ctx.fillStyle = 'rgba(6,8,13,.22)';
+    ctx.fillRect(0,0,W,H);
+
+    // Längerer Urknall: Nachbeben — zwei weitere Wellen
+    if(phase==='bang' && !secondBurstDone && age > 1.1){
+      secondBurstDone = true;
+      particles.push(...makeParticles(reduced?0:500, .65));
+      shockwaves.push({r:0,v:12,w:6,a:.6,c:'54,226,196'});
+    }
+    if(phase==='bang' && !thirdBurstDone && age > 2.2){
+      thirdBurstDone = true;
+      particles.push(...makeParticles(reduced?0:350, .45));
+      shockwaves.push({r:0,v:9,w:5,a:.45,c:'91,140,255'});
+    }
+
+    for(const s of shockwaves){
+      s.r += s.v; s.a *= .987;
+      if(s.a<.01) continue;
+      ctx.beginPath(); ctx.arc(CX,CY,s.r,0,Math.PI*2);
+      ctx.strokeStyle = `rgba(${s.c},${s.a})`;
+      ctx.lineWidth = s.w; ctx.stroke();
+    }
+
+    const drag = .986;
+    const settledAlpha = phase==='universe' ? .35 : .85;
+    const sinceAssemble = (phase==='assemble'||phase==='universe') ? now-assembleStart : 0;
+
+    for(const p of particles){
+      if(p.mode === 'target'){
+        if(sinceAssemble > p.delay){
+          p.x += (p.tx - p.x) * .075;
+          p.y += (p.ty - p.y) * .075;
+          if(Math.hypot(p.tx-p.x, p.ty-p.y) < 1.2){
+            p.x = p.tx; p.y = p.ty;
+            p.mode = 'locked';
+          }
+        } else {
+          p.x += p.vx*.3; p.y += p.vy*.3;
+          p.vx*=drag; p.vy*=drag;
+        }
+        ctx.fillStyle = 'rgba(54,226,196,.9)';
+        ctx.beginPath(); ctx.arc(p.x,p.y,1.4,0,Math.PI*2); ctx.fill();
+        continue;
+      }
+      if(p.mode === 'locked'){
+        const flick = .7 + .3*Math.sin(now*.004 + p.tx);
+        ctx.fillStyle = `rgba(140,240,220,${flick})`;
+        ctx.beginPath(); ctx.arc(p.x,p.y,1.3,0,Math.PI*2); ctx.fill();
+        continue;
+      }
+      if(p.mode === 'fly-to-node'){
+        p.x += (p.tx - p.x) * 0.055;
+        p.y += (p.ty - p.y) * 0.055;
+        const flick = 0.5 + 0.5*Math.sin(now*0.006 + p.tx*0.01);
+        ctx.fillStyle = `rgba(54,226,196,${flick*0.9})`;
+        ctx.beginPath(); ctx.arc(p.x,p.y,1.6,0,Math.PI*2); ctx.fill();
+        continue;
+      }
+      if(p.mode === 'release'){
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= .96; p.vy *= .96;
+        if(Math.abs(p.vx)+Math.abs(p.vy) < .2){ p.mode='free'; p.settled=true; }
+        ctx.fillStyle = 'rgba(91,140,255,.5)';
+        ctx.beginPath(); ctx.arc(p.x,p.y,1,0,Math.PI*2); ctx.fill();
+        continue;
+      }
+      // freie Partikel
+      if(!p.settled){
+        p.x+=p.vx; p.y+=p.vy;
+        p.vx*=drag; p.vy*=drag;
+        const a = Math.atan2(p.y-CY,p.x-CX)+p.spin;
+        const d = Math.hypot(p.x-CX,p.y-CY);
+        p.x = CX+Math.cos(a)*d; p.y = CY+Math.sin(a)*d;
+        if(Math.abs(p.vx)+Math.abs(p.vy)<.22) p.settled = true;
+      }
+      if(p.x<0)p.x+=W; if(p.x>W)p.x-=W;
+      if(p.y<0)p.y+=H; if(p.y>H)p.y-=H;
+      const c = coolColor(p, age);
+      const tw = p.settled
+        ? (.14+.26*Math.abs(Math.sin(now*.001*p.life*3+p.x)))*settledAlpha
+        : .95;
+      ctx.fillStyle = `rgba(${c},${tw*p.life})`;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.settled?p.size*.55:p.size,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  let cosmosRunning = true;
+  function loop(now){
+    if(!cosmosRunning) return;
+    if(phase==='singularity') drawSingularity();
+    else drawParticles(now);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  /* ── Ablauf ── */
+  const intro = document.getElementById('intro');
+  const flash = document.getElementById('flash');
+  const page = document.getElementById('page');
+  const terminal = document.getElementById('terminal');
+
+  let bg3dRevealHandled = false;
+  function goLive(){
+    phase = 'universe';
+    document.body.classList.remove('locked');
+    document.body.classList.add('booted');
+    try{ sessionStorage.setItem('bangSeen','1'); }catch(e){}
+    if(!bg3dRevealHandled){
+      startBg3d();
+      document.getElementById('bg3d')?.classList.add('on');
+      setTimeout(()=>{
+        document.getElementById('cosmos')?.classList.add('faded');
+        setTimeout(()=>{ cosmosRunning = false; }, 1700);
+      }, 1400);
+    }
+    runPipeline();
+  }
+
+  function detonate(){
+    if(phase!=='singularity') return;
+    flash.classList.remove('boom'); void flash.offsetWidth;
+    flash.classList.add('boom');
+    canvas.classList.add('shake');
+    setTimeout(()=>canvas.classList.remove('shake'),650);
+    intro.classList.add('gone');
+
+    if(reduced){
+      page.hidden = false;
+      terminal.classList.add('materialized');
+      goLive();
+      return;
+    }
+
+    phase = 'bang';
+    bangStart = performance.now();
+    spawnBang();
+
+    // Längerer Knall: 3,5s freie Expansion mit Nachbeben,
+    // dann sammeln sich die Trümmer zum Terminal (~3s),
+    // dann Übergabe ans echte UI.
+    setTimeout(()=>{
+      page.hidden = false;
+      scrollTo(0,0);
+      const rect = terminal.getBoundingClientRect();
+      assignTargets(sampleTerminalShape(rect));
+      phase = 'assemble';
+      assembleStart = performance.now();
+      // bg3d früh starten (noch unsichtbar) damit Knotenpositionen bereit sind
+      startBg3d();
+
+      setTimeout(()=>{
+        terminal.classList.add('materialized');
+        setTimeout(()=>{
+          // Knotenpositionen aus dem 3D-Hintergrund projizieren
+          const nodeScreenPos = (window.__getBg3dNodePositions ? window.__getBg3dNodePositions() : []).slice();
+          for(let i = nodeScreenPos.length-1; i > 0; i--){
+            const j = Math.floor(Math.random()*(i+1));
+            [nodeScreenPos[i], nodeScreenPos[j]] = [nodeScreenPos[j], nodeScreenPos[i]];
+          }
+          let ni = 0;
+          for(const p of particles){
+            if(p.mode==='locked' || p.mode==='target'){
+              if(ni < nodeScreenPos.length){
+                p.tx = nodeScreenPos[ni].x;
+                p.ty = nodeScreenPos[ni].y;
+                p.mode = 'fly-to-node';
+                ni++;
+              } else {
+                const a = Math.random()*Math.PI*2;
+                const s = rand(.5,2.5);
+                p.vx = Math.cos(a)*s; p.vy = Math.sin(a)*s;
+                p.mode = 'release';
+              }
+            }
+          }
+          // Partikel fliegen ~1.4s zu den Knoten, dann 3D-Sphere einblenden
+          bg3dRevealHandled = true;
+          setTimeout(()=>{
+            document.getElementById('bg3d')?.classList.add('on');
+            goLive();
+            setTimeout(()=>{
+              document.getElementById('cosmos')?.classList.add('faded');
+              setTimeout(()=>{ cosmosRunning = false; }, 1700);
+            }, 700);
+          }, 1400);
+        }, 1000);
+      }, 3100);
+    }, 3500);
+  }
+  intro.addEventListener('click', detonate);
+  addEventListener('keydown', e=>{
+    if(phase==='singularity' && (e.key===' '||e.key==='Enter')) detonate();
+  });
+
+  /* ── CLI-Pipeline ── */
+  const term = document.getElementById('termBody');
+  const skipBtn = document.getElementById('skipBtn');
+  let skipped = reduced;
+  let userScrolled = false;
+  addEventListener('wheel', ()=>{ userScrolled = true; }, {passive:true});
+  addEventListener('touchmove', ()=>{ userScrolled = true; }, {passive:true});
+
+  function buildScript(){
+    const T = translations[currentLang];
+    return [
+      {type:'out', html:T.t_assembled},
+      {type:'cmd', text:T.t_cmd},
+      {type:'out', html:T.t_inflation},
+      {type:'reveal', id:'sec-hero'},
+      {type:'out', html:T.t_hero_ok},
+      {type:'out', html:T.t_nucleo},
+      {type:'reveal', id:'about'},
+      {type:'out', html:T.t_about_ok},
+      {type:'out', html:T.t_recomb},
+      {type:'reveal', id:'work'},
+      {type:'out', html:T.t_work_ok},
+      {type:'out', html:T.t_today},
+      {type:'reveal', id:'contact'},
+      {type:'out', html:T.t_release},
+      {type:'out', html:''},
+      {type:'out', html:T.t_done},
+      {type:'minimize'}
+    ];
+  }
+
+  const sleep = ms => new Promise(r=>setTimeout(r, skipped?0:ms));
+
+  function addLine(html){
+    const d = document.createElement('div');
+    d.className = 'log-line'; d.innerHTML = html;
+    const cli = document.getElementById('cliLine');
+    if(cli) term.insertBefore(d, cli); else term.appendChild(d);
+    term.scrollTop = term.scrollHeight;
+  }
+  async function typeCmd(text){
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = '<span class="prompt">AJ@universe:~$</span> ';
+    const span = document.createElement('span');
+    span.className = 'cursor';
+    line.appendChild(span);
+    term.appendChild(line);
+    for(const ch of text){
+      span.textContent += ch;
+      term.scrollTop = term.scrollHeight;
+      await sleep(24+Math.random()*32);
+    }
+    span.classList.remove('cursor');
+  }
+
+  /* ── Scramble-Text-Utility ── */
+  const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%<>/\\{}[]|_-+=';
+  function scrambleText(el, finalText, duration, onDone){
+    const steps = Math.ceil(duration / 35);
+    let step = 0;
+    const id = setInterval(()=>{
+      step++;
+      const progress = Math.min(1, step / steps);
+      let out = '';
+      for(let i = 0; i < finalText.length; i++){
+        const ch = finalText[i];
+        if(ch === ' ' || ch === '\n' || ch === '·'){ out += ch; continue; }
+        if(i < finalText.length * Math.min(1, progress * 1.5)){
+          out += ch;
+        } else {
+          out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        }
+      }
+      el.textContent = out;
+      if(step >= steps){
+        clearInterval(id);
+        el.textContent = finalText;
+        if(onDone) onDone();
+      }
+    }, 35);
+  }
+
+  function addScanSweep(sec){
+    const sweep = document.createElement('div');
+    sweep.className = 'scan-sweep';
+    sec.appendChild(sweep);
+    setTimeout(()=> sweep.remove(), 750);
+  }
+
+  // Typewriter für beliebiges Element
+  function typewriterEl(el, text, speed, onDone){
+    el.textContent='';
+    let i=0;
+    const step=()=>{
+      if(i<=text.length){ el.textContent=text.slice(0,i++); setTimeout(step, speed+Math.random()*(speed*.5)); }
+      else if(onDone) onDone();
+    };
+    step();
+  }
+
+  function animateSection(sec, id){
+    if(reduced) return;
+
+    if(id==='about'){
+      // Titel: Typewriter
+      const title = sec.querySelector('.sec-title');
+      if(title){ if(title.dataset.full==null) title.dataset.full=title.textContent;
+        const t=title.dataset.full; title.textContent=''; typewriterEl(title, t, 38); }
+      // loading bar
+      const box = sec.querySelector('.stack-box');
+      if(box) setTimeout(()=> box.classList.add('loaded'), 500);
+    }
+
+    else if(id==='work'){
+      // Titel: Scramble
+      const title = sec.querySelector('.sec-title');
+      if(title){ if(title.dataset.full==null) title.dataset.full=title.textContent;
+        addScanSweep(sec); const t=title.dataset.full; setTimeout(()=>scrambleText(title,t,650),80); }
+      // Karten
+      const cards = sec.querySelectorAll('.card');
+      cards.forEach((card,i)=>{
+        card.addEventListener('animationend', ()=>{ card.style.animation=''; }, {once:true});
+        const num = card.querySelector('.num');
+        if(num){ if(num.dataset.full==null) num.dataset.full=num.textContent;
+          const t=num.dataset.full; setTimeout(()=>scrambleText(num,t,380), 240+i*145); }
+        const tags = card.querySelectorAll('.tags span');
+        tags.forEach((tag,j)=>{
+          tag.style.opacity='0';
+          setTimeout(()=>{ tag.style.transition='opacity 0.18s ease'; tag.style.opacity='1'; }, 320+i*145+j*55);
+        });
+      });
+    }
+
+    else if(id==='contact'){
+      // Titel: Glow-Fade
+      const title = sec.querySelector('.big');
+      if(title){
+        title.style.opacity='0';
+        title.style.filter='blur(8px)';
+        title.style.transition='opacity 0.9s ease, filter 0.9s ease';
+        setTimeout(()=>{ title.style.opacity='1'; title.style.filter=''; }, 100);
+      }
+      // Meta links cascadieren
+      const meta = sec.querySelectorAll('.meta a, .meta span');
+      meta.forEach((el,i)=>{
+        el.style.opacity='0'; el.style.transform='translateY(10px)';
+        setTimeout(()=>{
+          el.style.transition='opacity 0.35s ease, transform 0.35s ease';
+          el.style.opacity='1'; el.style.transform='';
+        }, 400+i*100);
+      });
+    }
+  }
+
+  // Setzt eine Section in den Vor-Animations-Zustand zurück,
+  // damit sie beim erneuten Reinscrollen wieder animiert.
+  function resetSection(sec, id){
+    if(id==='about'){
+      const title=sec.querySelector('.sec-title');
+      if(title && title.dataset.full!=null) title.textContent=title.dataset.full;
+      sec.querySelector('.stack-box')?.classList.remove('loaded');
+    } else if(id==='work'){
+      const title=sec.querySelector('.sec-title');
+      if(title && title.dataset.full!=null) title.textContent=title.dataset.full;
+      sec.querySelectorAll('.card').forEach(card=>{
+        card.style.animation='';
+        const num=card.querySelector('.num');
+        if(num && num.dataset.full!=null) num.textContent=num.dataset.full;
+        card.querySelectorAll('.tags span').forEach(t=>{ t.style.opacity=''; t.style.transition=''; t.style.transform=''; });
+      });
+    } else if(id==='contact'){
+      const title=sec.querySelector('.big');
+      if(title){ title.style.opacity=''; title.style.filter=''; title.style.transition=''; }
+      sec.querySelectorAll('.meta a, .meta span').forEach(el=>{ el.style.opacity=''; el.style.transform=''; el.style.transition=''; });
+    }
+  }
+
+  function initScrollAnims(){
+    if(reduced) return;
+    if(window.__scrollAnimsReady) return;   // Observer nur einmal aufsetzen
+    window.__scrollAnimsReady = true;
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        const sec = e.target;
+        // genügend sichtbar → animieren (einmal pro Eintritt)
+        if(e.isIntersecting && e.intersectionRatio >= 0.15){
+          if(sec.classList.contains('anim-in')) return;
+          sec.classList.add('anim-in');
+          setTimeout(()=> animateSection(sec, sec.id), 60);
+        }
+        // komplett aus dem Viewport → zurücksetzen, damit es erneut feuert
+        else if(!e.isIntersecting && sec.classList.contains('anim-in')){
+          sec.classList.remove('anim-in');
+          resetSection(sec, sec.id);
+        }
+      });
+    }, {threshold:[0, 0.15]});
+    ['about','work','contact'].forEach(id=>{
+      const sec = document.getElementById(id);
+      if(sec) io.observe(sec);
+    });
+  }
+
+  function reveal(id, instant){
+    const sec = document.getElementById(id);
+    if(!sec) return;
+    sec.hidden = false;
+    if(instant){
+      void sec.offsetHeight;
+      sec.classList.add('deployed');
+      if(id==='sec-hero') typeHero(true);
+      return;
+    }
+    // Hero: l2 vorab leeren damit kein Flash
+    if(id==='sec-hero' && !reduced){
+      const l2 = document.getElementById('heroType');
+      if(l2) l2.textContent='';
+    }
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      if(!skipped && !userScrolled && !reduced){
+        sec.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+      sec.classList.add('deployed');
+      if(id==='sec-hero'){
+        setTimeout(()=>typeHero(false), 500);
+      }
+    }));
+  }
+
+  // Multi-stage programmer reveal für Hero
+  let heroTyped = false;
+  function typeHero(instant){
+    if(heroTyped) return;
+    heroTyped = true;
+    const kicker = document.querySelector('#sec-hero .kicker');
+    const l1 = document.querySelector('h1 .l1');
+    const l2 = document.getElementById('heroType');
+    const sub = document.querySelector('#sec-hero .sub');
+
+    const kickerText = kicker ? (kicker.dataset.final || (kicker.dataset.final = kicker.textContent)) : '';
+    const l2Text = l2 ? (l2.textContent || 'Engineer.') : 'Engineer.';
+    const subText = sub ? sub.textContent : '';
+
+    if(instant || reduced){
+      if(kicker){ kicker.style.opacity='1'; kicker.textContent=kickerText; }
+      if(l1) l1.style.opacity='1';
+      if(l2){ l2.textContent=l2Text; l2.classList.add('lined'); }
+      if(sub){ sub.style.opacity='1'; sub.textContent=subText; }
+      return;
+    }
+
+    // Stage 1 (0ms): Kicker decoded
+    if(kicker){
+      kicker.textContent = kickerText;
+      setTimeout(()=>{
+        kicker.style.transition='opacity 0.15s';
+        kicker.style.opacity='1';
+        scrambleText(kicker, kickerText, 550);
+      }, 0);
+    }
+
+    // Stage 2 (280ms): "Software" scrambles in
+    if(l1){
+      setTimeout(()=>{
+        l1.style.transition='opacity 0.1s';
+        l1.style.opacity='1';
+        scrambleText(l1, 'Software', 750);
+      }, 280);
+    }
+
+    // Stage 3 (720ms): "Engineer." scrambles with cursor
+    if(l2){
+      l2.textContent='';
+      l2.classList.add('typing','scrambling');
+      setTimeout(()=>{
+        scrambleText(l2, l2Text, 900, ()=>{
+          l2.classList.remove('scrambling');
+          setTimeout(()=>{ l2.classList.remove('typing'); l2.classList.add('lined'); }, 900);
+        });
+      }, 720);
+    }
+
+    // Stage 4 (1350ms): subtitle fast-types
+    if(sub){
+      sub.textContent='';
+      setTimeout(()=>{
+        sub.style.transition='opacity 0.15s';
+        sub.style.opacity='1';
+        let i=0;
+        const step=()=>{
+          if(i<=subText.length){ sub.textContent=subText.slice(0,i++); setTimeout(step,9+Math.random()*7); }
+        };
+        step();
+      }, 1350);
+    }
+  }
+
+  let pipelineRan = false;
+  async function runPipeline(){
+    if(pipelineRan) return;
+    pipelineRan = true;
+    const script = buildScript();
+    for(const step of script){
+      if(step.type==='cmd'){ await typeCmd(step.text); await sleep(280); }
+      else if(step.type==='out'){ addLine(step.html); await sleep(430+Math.random()*260); }
+      else if(step.type==='reveal'){ reveal(step.id); await sleep(skipped?0:1500); }
+      else if(step.type==='minimize'){
+        await sleep(900);
+        skipBtn.style.display = 'none';
+        if(!skipped && !userScrolled && !reduced){
+          scrollTo({top:0, behavior:'smooth'});
+        }
+        // Konsole bleibt offen und interaktiv, fährt aber auf kompakte Höhe
+        await sleep(skipped ? 200 : 1400);
+        terminal.classList.add('compact');
+        activatePrompt();
+        initScrollAnims();
+        // Show vorbei → Konsole als schwebendes Panel nach links docken
+        await sleep(skipped ? 200 : 700);
+        terminal.classList.add('docked-left');
+      }
+    }
+  }
+  function runPipelineInstant(){
+    if(pipelineRan) return;
+    pipelineRan = true;
+    const script = buildScript();
+    for(const step of script){
+      if(step.type==='cmd') addLine('<span class="prompt">AJ@universe:~$</span> '+step.text);
+      else if(step.type==='out') addLine(step.html);
+      else if(step.type==='reveal') reveal(step.id, true);
+      else if(step.type==='minimize'){
+        terminal.classList.add('compact');
+        skipBtn.style.display = 'none';
+      }
+    }
+    activatePrompt();
+    initScrollAnims();
+    terminal.classList.add('docked-left');
+  }
+
+  // Konsole minimiert öffnen/schließen
+  const reopenChip = document.getElementById('consoleReopen');
+  function closeConsole(instant){
+    if(!terminal) return;
+    if(instant){ terminal.style.display = 'none'; }
+    else {
+      terminal.classList.add('closing');
+      setTimeout(()=>{ terminal.style.display = 'none'; }, 850);
+    }
+    reopenChip?.classList.add('show');
+  }
+  function openConsole(){
+    if(!terminal) return;
+    terminal.style.display = '';
+    terminal.classList.remove('closing','minimized');
+    void terminal.offsetWidth;
+    reopenChip?.classList.remove('show');
+    const inp = document.getElementById('cliInput');
+    if(inp) inp.focus();
+  }
+  reopenChip?.addEventListener('click', openConsole);
+
+  /* ════════ INTERAKTIVE CLI ════════ */
+  const CMD = {
+    en: {
+      welcome: 'type <b>help</b> to explore — or just look around ↑',
+      help: `available commands:
+  <b>help</b>        show this list
+  <b>about</b>       who is Andreas Jung
+  <b>skills</b>      tech stack
+  <b>projects</b>    selected work (with links)
+  <b>cv</b>          short CV in the terminal
+  <b>open</b> &lt;x&gt;    open: github · email · zerotrust · faas · chat
+  <b>contact</b>     how to reach me
+  <b>send</b>        ✉  send me a message right here
+  <b>theme</b>       toggle teal / amber
+  <b>lang</b>        switch DE / EN
+  <b>neofetch</b>    system info
+  <b>clear</b>       clear the console
+  <span class="info"># psst… a few commands are hidden 🥚</span>`,
+      about: `Andreas Jung — Junior DevOps / Cloud Engineer.
+CS graduate (Hochschule Kaiserslautern), focus on cloud-native
+architectures, Kubernetes and Zero-Trust security. Former
+electrical engineer at BASF SE — safety-critical mindset included.`,
+      skills: 'Java · Spring Boot · Docker · Kubernetes · Zero Trust/Keycloak · Google Cloud · Git/CI-CD · Python · SQL',
+      projects: `001 <a href="https://github.com/CC-X5/Code-Zero-Trust-Prinzipien" target="_blank" rel="noopener">Zero-Trust Architectures</a> — bachelor's thesis
+002 <a href="https://github.com/CC-X5/Serverless-Function-Runner" target="_blank" rel="noopener">Serverless Function Runner</a> — FaaS on GKE
+003 <a href="https://github.com/CC-X5/chat-module-project" target="_blank" rel="noopener">WebSocket Chat Module</a> — npm package
+004 Mail Service & Rental System — private`,
+      contact: `email   <a href="mailto:AJ-PV5@proton.me">AJ-PV5@proton.me</a>
+github  <a href="https://github.com/CC-X5" target="_blank" rel="noopener">github.com/CC-X5</a>
+where   Zweibrücken, DE`,
+      notfound: c => `command not found: ${c} — type <b>help</b>`,
+      opening: x => `opening ${x} ...`,
+      cleared: '',
+      themed: t => `theme → ${t}`,
+      sudo: '<span class="run">nice try.</span> you already have root on this universe ☕',
+      cv: `<b>Andreas Jung</b> — Software Engineer · Zweibrücken, DE
+─────────────────────────────────────────────
+<span class="run">education</span>  B.Sc. Computer Science — HS Kaiserslautern
+<span class="run">focus</span>      Cloud-Native · Kubernetes · Zero-Trust Security
+<span class="run">stack</span>      Java · Spring Boot · Docker · K8s · Python · SQL
+<span class="run">before</span>     Electrical engineer (BASF SE) — safety-critical mindset
+<span class="run">contact</span>    <a href="mailto:AJ-PV5@proton.me">AJ-PV5@proton.me</a> · <a href="https://github.com/CC-X5" target="_blank" rel="noopener">github.com/CC-X5</a>
+─────────────────────────────────────────────
+tip: type <b>send</b> to message me, or <b>open github</b>`,
+      pwd: '/home/aj/universe',
+      coffee: "☕ brewing... <span class=\"run\">HTTP 418</span> — I'm a teapot, not a coffee machine.",
+      ping: 'PONG 🛰  reply from AJ@universe: time=0.42ms ttl=∞',
+      uptime: 'up <b>13.8 billion years</b>, 0 crashes · load: curious, building, shipping',
+      cdmsg: 'nowhere to go but forward. try <b>projects</b> ▸',
+      vim: 'you are now trapped in vim. type <b>:q</b> to escape… (good luck)',
+      vimq: 'you escaped vim. legends will speak of this day.',
+      exitmsg: 'there is no exit from the universe — but the <span class="run">red ●</span> closes the console.',
+      hello: 'hey 👋 type <b>help</b> to explore, or <b>send</b> to message me.',
+      manmsg: 'RTFM? there is only <b>help</b> here, traveler.',
+      rmmsg: '<span class="run">nope.</span> not on my watch. 🛡 your files are safe.',
+      compose_intro: '✉  compose message — type "cancel" anytime to abort.',
+      compose_email: 'your email ▸',
+      compose_msg: 'your message ▸',
+      compose_cancel: 'aborted.',
+      compose_bademail: "<span class=\"err\">that doesn't look like an email.</span> try again ▸",
+      compose_emptymsg: '<span class="err">message is empty.</span> type something ▸',
+      compose_sending: 'transmitting across the network …',
+      compose_ok: "✓ message sent — thanks! I'll get back to you soon.",
+      compose_err: '<span class="err">✗ transmission failed.</span> email me directly: AJ-PV5@proton.me',
+      empty: ''
+    },
+    de: {
+      welcome: 'tippe <b>help</b> zum Erkunden — oder schau dich einfach um ↑',
+      help: `verfügbare Befehle:
+  <b>help</b>        diese Liste
+  <b>about</b>       wer ist Andreas Jung
+  <b>skills</b>      Tech-Stack
+  <b>projects</b>    ausgewählte Projekte (mit Links)
+  <b>cv</b>          Kurz-CV im Terminal
+  <b>open</b> &lt;x&gt;    öffnen: github · email · zerotrust · faas · chat
+  <b>contact</b>     Kontaktmöglichkeiten
+  <b>send</b>        ✉  schick mir direkt eine Nachricht
+  <b>theme</b>       Teal / Amber umschalten
+  <b>lang</b>        DE / EN wechseln
+  <b>neofetch</b>    System-Infos
+  <b>clear</b>       Konsole leeren
+  <span class="info"># pssst… ein paar Befehle sind versteckt 🥚</span>`,
+      about: `Andreas Jung — Junior DevOps / Cloud Engineer.
+Informatik-Absolvent (HS Kaiserslautern), Schwerpunkt Cloud-native
+Architekturen, Kubernetes und Zero-Trust-Sicherheit. Früher
+Elektroniker bei BASF SE — sicherheitskritisches Denken inklusive.`,
+      skills: 'Java · Spring Boot · Docker · Kubernetes · Zero Trust/Keycloak · Google Cloud · Git/CI-CD · Python · SQL',
+      projects: `001 <a href="https://github.com/CC-X5/Code-Zero-Trust-Prinzipien" target="_blank" rel="noopener">Zero-Trust-Architekturen</a> — Bachelorarbeit
+002 <a href="https://github.com/CC-X5/Serverless-Function-Runner" target="_blank" rel="noopener">Serverless Function Runner</a> — FaaS auf GKE
+003 <a href="https://github.com/CC-X5/chat-module-project" target="_blank" rel="noopener">WebSocket Chat Modul</a> — npm-Paket
+004 Mail-Service & Verleihsystem — privat`,
+      contact: `E-Mail  <a href="mailto:AJ-PV5@proton.me">AJ-PV5@proton.me</a>
+GitHub  <a href="https://github.com/CC-X5" target="_blank" rel="noopener">github.com/CC-X5</a>
+Ort     Zweibrücken, DE`,
+      notfound: c => `Befehl nicht gefunden: ${c} — tippe <b>help</b>`,
+      opening: x => `öffne ${x} ...`,
+      cleared: '',
+      themed: t => `Theme → ${t}`,
+      sudo: '<span class="run">netter Versuch.</span> du hast hier längst root ☕',
+      cv: `<b>Andreas Jung</b> — Software Engineer · Zweibrücken, DE
+─────────────────────────────────────────────
+<span class="run">Studium</span>    B.Sc. Informatik — HS Kaiserslautern
+<span class="run">Fokus</span>      Cloud-Native · Kubernetes · Zero-Trust-Security
+<span class="run">Stack</span>      Java · Spring Boot · Docker · K8s · Python · SQL
+<span class="run">davor</span>      Elektroniker (BASF SE) — sicherheitskritisches Denken
+<span class="run">Kontakt</span>    <a href="mailto:AJ-PV5@proton.me">AJ-PV5@proton.me</a> · <a href="https://github.com/CC-X5" target="_blank" rel="noopener">github.com/CC-X5</a>
+─────────────────────────────────────────────
+Tipp: <b>send</b> für eine Nachricht, oder <b>open github</b>`,
+      pwd: '/home/aj/universe',
+      coffee: '☕ brewe… <span class="run">HTTP 418</span> — ich bin eine Teekanne, keine Kaffeemaschine.',
+      ping: 'PONG 🛰  Antwort von AJ@universe: time=0.42ms ttl=∞',
+      uptime: 'läuft seit <b>13,8 Milliarden Jahren</b>, 0 Abstürze · load: neugierig, bauend, ausliefernd',
+      cdmsg: 'es geht nur vorwärts. probier <b>projects</b> ▸',
+      vim: 'du steckst jetzt in vim fest. tippe <b>:q</b> zum Verlassen… (viel Glück)',
+      vimq: 'du hast vim verlassen. Legenden werden von diesem Tag erzählen.',
+      exitmsg: 'aus dem Universum gibt es kein Entkommen — aber der <span class="run">rote ●</span> schließt die Konsole.',
+      hello: 'hey 👋 tippe <b>help</b> zum Erkunden, oder <b>send</b> für eine Nachricht.',
+      manmsg: 'RTFM? hier gibt es nur <b>help</b>, Reisender.',
+      rmmsg: '<span class="run">nope.</span> nicht mit mir. 🛡 deine Dateien sind sicher.',
+      compose_intro: '✉  Nachricht verfassen — "cancel" bricht jederzeit ab.',
+      compose_email: 'deine E-Mail ▸',
+      compose_msg: 'deine Nachricht ▸',
+      compose_cancel: 'abgebrochen.',
+      compose_bademail: '<span class="err">das sieht nicht nach einer E-Mail aus.</span> nochmal ▸',
+      compose_emptymsg: '<span class="err">Nachricht ist leer.</span> schreib etwas ▸',
+      compose_sending: 'übertrage durchs Netzwerk …',
+      compose_ok: '✓ Nachricht gesendet — danke! Ich melde mich bald.',
+      compose_err: '<span class="err">✗ Übertragung fehlgeschlagen.</span> schreib mir direkt: AJ-PV5@proton.me',
+      empty: ''
+    }
+  };
+  const OPEN_TARGETS = {
+    github:    'https://github.com/CC-X5',
+    email:     'mailto:AJ-PV5@proton.me',
+    zerotrust: 'https://github.com/CC-X5/Code-Zero-Trust-Prinzipien',
+    faas:      'https://github.com/CC-X5/Serverless-Function-Runner',
+    chat:      'https://github.com/CC-X5/chat-module-project'
+  };
+  const COMMANDS = ['help','about','skills','projects','cv','open','contact','send','theme','lang','neofetch','clear','sudo','whoami','ls','date','echo','pwd','history','coffee','ping','uptime','matrix','exit','vim'];
+  let compose = null;
+  const history = [];
+  let histIdx = -1;
+  let promptActive = false;
+
+  function activatePrompt(){
+    if(promptActive) return;
+    promptActive = true;
+    if(window.__setStatusLive) window.__setStatusLive();
+    const L = CMD[currentLang];
+    addLine('<span class="info">'+L.welcome+'</span>');
+    renderInputLine();
+    if(!reduced){
+      // beim Tippen ins Terminal scrollen wir nicht weg
+    }
+  }
+
+  function renderInputLine(){
+    // bestehende Eingabezeile entfernen
+    const old = document.getElementById('cliLine');
+    if(old) old.remove();
+    const line = document.createElement('div');
+    line.className = 'log-line cli-line';
+    line.id = 'cliLine';
+    line.innerHTML = '<span class="prompt">AJ@universe:~$</span> ' +
+      '<input id="cliInput" class="cli-input" autocomplete="off" spellcheck="false" ' +
+      'autocapitalize="off" aria-label="terminal input" />';
+    term.appendChild(line);
+    const inp = document.getElementById('cliInput');
+    inp.addEventListener('keydown', onCliKey);
+    inp.focus();
+    term.scrollTop = term.scrollHeight;
+  }
+
+  function commitInputEcho(text){
+    const old = document.getElementById('cliLine');
+    if(old) old.remove();
+    addLine('<span class="prompt">AJ@universe:~$</span> ' + escapeHtml(text));
+  }
+
+  function onCliKey(e){
+    const inp = e.target;
+    if(e.key === 'Enter'){
+      const raw = inp.value.trim();
+      commitInputEcho(raw);
+      if(compose){ if(raw) handleCompose(raw); renderInputLine(); return; }
+      if(raw){ history.push(raw); histIdx = history.length; runCommand(raw); }
+      renderInputLine();
+    } else if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(history.length){ histIdx = Math.max(0, histIdx-1); inp.value = history[histIdx] || ''; }
+    } else if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(history.length){ histIdx = Math.min(history.length, histIdx+1); inp.value = history[histIdx] || ''; }
+    } else if(e.key === 'Tab'){
+      e.preventDefault();
+      const v = inp.value.trim().toLowerCase();
+      const hit = COMMANDS.find(c => c.startsWith(v) && v);
+      if(hit) inp.value = hit;
+    } else if(e.key === 'l' && e.ctrlKey){
+      e.preventDefault(); doClear();
+    }
+  }
+
+  function out(html){ addLine(html.replace(/\n/g,'<br>')); }
+
+  function runCommand(raw){
+    const L = CMD[currentLang];
+    const parts = raw.split(/\s+/);
+    const cmd = (parts[0] || '').toLowerCase();
+    const rest = parts.slice(1);              // Original-Schreibweise (für echo)
+    const arg = (rest[0] || '').toLowerCase();
+    switch(cmd){
+      case 'help':            out(L.help); break;
+      case 'about': case 'whoami': out('<span class="ok">'+L.about+'</span>'); break;
+      case 'skills':          out('<span class="run">'+L.skills+'</span>'); break;
+      case 'projects': case 'ls': out(L.projects); break;
+      case 'cv': case 'resume': out(L.cv); break;
+      case 'contact':         out(L.contact); break;
+      case 'send': case 'mail': case 'msg': case 'message': startCompose(); break;
+      case 'open': {
+        if(arg && OPEN_TARGETS[arg]){
+          const t = OPEN_TARGETS[arg];
+          const url = typeof t==='function' ? t() : t;
+          out(L.opening(arg));
+          window.open(url, arg==='email'?'_self':'_blank', 'noopener');
+        } else {
+          out(L.notfound('open '+(arg||'')));
+        }
+        break;
+      }
+      case 'theme':           toggleTheme(); out(L.themed(document.body.classList.contains('amber')?'amber':'teal')); break;
+      case 'lang':            toggleLang(); break;
+      case 'neofetch': case 'screenfetch': doNeofetch(); break;
+      case 'clear': case 'cls': doClear(); break;
+      /* ── Easter Eggs ── */
+      case 'sudo':            out(L.sudo); break;
+      case 'date': case 'time': out(escapeHtml(new Date().toString())); break;
+      case 'echo':            out(escapeHtml(rest.join(' '))); break;
+      case 'pwd':             out(L.pwd); break;
+      case 'history':         out(history.length ? history.map((h,i)=>String(i+1).padStart(3)+'  '+escapeHtml(h)).join('\n') : '—'); break;
+      case 'coffee': case 'brew': out(L.coffee); break;
+      case 'ping':            out(L.ping); break;
+      case 'uptime':          out(L.uptime); break;
+      case 'matrix':          runMatrix(9000); break;
+      case 'cd':              out(L.cdmsg); break;
+      case 'vim': case 'vi': case 'nano': case 'emacs': out(L.vim); break;
+      case ':q': case ':wq': case ':q!': out(L.vimq); break;
+      case 'exit': case 'quit': case 'logout': out(L.exitmsg); break;
+      case 'hello': case 'hi': case 'hey': case 'hallo': case 'moin': out(L.hello); break;
+      case 'man':             out(L.manmsg); break;
+      case 'rm':              out(L.rmmsg); break;
+      case '':                break;
+      default:                out(L.notfound(cmd));
+    }
+    term.scrollTop = term.scrollHeight;
+  }
+
+  /* ── interaktiver Nachrichten-Compose (nutzt __sendContact / Web3Forms) ── */
+  function startCompose(){
+    const L = CMD[currentLang];
+    compose = { step:'email', email:'' };
+    out('<span class="run">'+L.compose_intro+'</span>');
+    out(L.compose_email);
+  }
+  function handleCompose(raw){
+    const L = CMD[currentLang];
+    const low = raw.toLowerCase();
+    if(low==='cancel' || low==='abort' || low===':q'){ compose=null; out('<span class="info">'+L.compose_cancel+'</span>'); return; }
+    if(compose.step==='email'){
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)){ out(L.compose_bademail); return; }
+      compose.email = raw; compose.step='message'; out(L.compose_msg); return;
+    }
+    if(compose.step==='message'){
+      if(!raw){ out(L.compose_emptymsg); return; }
+      const payload = { name: compose.email.split('@')[0], email: compose.email, message: raw };
+      compose = null;
+      out('<span class="info">'+L.compose_sending+'</span>');
+      const finish = ok => out(ok ? '<span class="ok">'+L.compose_ok+'</span>' : L.compose_err);
+      if(window.__sendContact){
+        window.__sendContact(payload).then(r => finish(r && r.success)).catch(()=> finish(false));
+      } else { finish(false); }
+    }
+  }
+
+  /* ── neofetch ── */
+  function doNeofetch(){
+    const art = [
+      "    .-=+**+=-.    ",
+      "  :+#%%%%%%%%#+:  ",
+      " =#%%%%%%%%%%%%#= ",
+      " #%%%%   AJ  %%%# ",
+      " =#%%%%%%%%%%%%#= ",
+      "  :+#%%%%%%%%#+:  ",
+      "    '-=+**+=-'    ",
+      "                 ",
+      "                 "
+    ];
+    const info = [
+      ['user','andreas jung'],
+      ['title','Software Engineer'],
+      ['os','UniverseOS · big-bang build'],
+      ['shell','aj-sh 1.0'],
+      ['stack','Java · Spring · Docker · K8s'],
+      ['focus','Cloud-Native · Zero-Trust'],
+      ['where','Zweibrücken, DE'],
+      ['uptime','13.8 Gyr · 0 crashes'],
+      ['contact','AJ-PV5@proton.me']
+    ];
+    const rows = art.map((a,i)=>{
+      const kv = info[i] ? '<span class="run">'+info[i][0].padEnd(8)+'</span> '+info[i][1] : '';
+      return '<span class="ok">'+a+'</span>  '+kv;
+    });
+    out(rows.join('\n'));
+  }
+
+  /* ── matrix-Regen (Easter Egg) ── */
+  function runMatrix(duration){
+    if(document.getElementById('matrixCanvas')) return;
+    const cv = document.createElement('canvas');
+    cv.id = 'matrixCanvas';
+    cv.style.cssText = 'position:fixed;inset:0;z-index:38;background:rgba(3,5,10,.94)';
+    document.body.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    const fs = 16;
+    let drops = [];
+    function size(){ cv.width=innerWidth; cv.height=innerHeight; const c=Math.floor(cv.width/fs); drops=new Array(c).fill(0).map(()=>Math.random()*-40); }
+    size();
+    const chars = 'アイウエオカキクサシスセソタチ0123456789ABCDEF<>/{}[]#$%&*';
+    const accent = (getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#36e2c4');
+    let raf, running = true;
+    function draw(){
+      ctx.fillStyle = 'rgba(3,5,10,.08)'; ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.font = fs+'px monospace';
+      for(let i=0;i<drops.length;i++){
+        const ch = chars[Math.floor(Math.random()*chars.length)];
+        const y = drops[i]*fs;
+        ctx.fillStyle = Math.random()<.025 ? '#ffffff' : accent;
+        ctx.fillText(ch, i*fs, y);
+        if(y > cv.height && Math.random() > .975) drops[i] = 0;
+        drops[i]++;
+      }
+      if(running) raf = requestAnimationFrame(draw);
+    }
+    draw();
+    const hint = document.createElement('div');
+    hint.id = 'matrixHint';
+    hint.style.cssText = 'position:fixed;bottom:22px;left:0;right:0;text-align:center;z-index:39;font-family:monospace;font-size:13px;letter-spacing:2px;color:'+accent;
+    hint.textContent = (currentLang==='de' ? '// Klick oder Taste zum Verlassen der Matrix' : '// click or press any key to exit the matrix');
+    document.body.appendChild(hint);
+    function stop(){
+      if(!running) return; running = false; cancelAnimationFrame(raf);
+      cv.remove(); hint.remove();
+      removeEventListener('keydown', stop, true); removeEventListener('click', stop, true); removeEventListener('resize', size);
+    }
+    addEventListener('keydown', stop, true); addEventListener('click', stop, true); addEventListener('resize', size);
+    if(duration) setTimeout(stop, duration);
+  }
+
+  function doClear(){
+    [...term.querySelectorAll('.log-line')].forEach(n=>{ if(n.id!=='cliLine') n.remove(); });
+    renderInputLine();
+  }
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Klick irgendwo ins Terminal fokussiert die Eingabe (und stellt aus Minimiert wieder her)
+  terminal?.addEventListener('click', ()=>{
+    if(terminal.classList.contains('closing')) return;
+    if(terminal.classList.contains('minimized')){ terminal.classList.remove('minimized'); }
+    const inp = document.getElementById('cliInput');
+    if(inp) inp.focus();
+  });
+
+  // ── macOS-Ampel: rot = schließen · gelb = minimieren · grün = Originalgröße ──
+  function bindDot(id, fn){
+    const d = document.getElementById(id);
+    if(!d) return;
+    d.addEventListener('click', e=>{ e.stopPropagation(); fn(); });
+    d.addEventListener('keydown', e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); fn(); }
+    });
+  }
+  bindDot('dotClose', ()=> closeConsole(false));
+  bindDot('dotMin', ()=>{
+    terminal.classList.remove('closing');
+    terminal.classList.toggle('minimized');
+  });
+  bindDot('dotZoom', ()=>{
+    // wechselt zwischen links angedockt (klein) und Originalgröße (mittig, groß)
+    terminal.classList.remove('minimized');
+    const goOriginal = terminal.classList.contains('docked-left');
+    terminal.classList.toggle('docked-left', !goOriginal);
+    terminal.classList.toggle('compact', !goOriginal);
+    if(goOriginal){ terminal.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+
+  // Überschriften beim Hover neu entschlüsseln (Glitch/Scramble)
+  function bindHoverScramble(el){
+    if(!el) return;
+    let busy=false;
+    el.style.cursor='default';
+    el.addEventListener('mouseenter', ()=>{
+      if(busy || reduced) return;
+      if(el.classList.contains('scrambling') || el.classList.contains('typing')) return;
+      const full = el.textContent;
+      if(!full || !full.trim()) return;
+      busy=true;
+      scrambleText(el, full, 460, ()=>{ busy=false; });
+    });
+  }
+  bindHoverScramble(document.querySelector('#sec-hero h1 .l1'));
+  bindHoverScramble(document.getElementById('heroType'));
+  bindHoverScramble(document.querySelector('#about .sec-title'));
+  bindHoverScramble(document.querySelector('#work .sec-title'));
+
+  skipBtn?.addEventListener('click', e=>{ e.stopPropagation(); skipped = true; });
+
+  document.getElementById('replayBtn')?.addEventListener('click', ()=>{
+    try{ sessionStorage.removeItem('bangSeen'); }catch(e){}
+    location.href = location.pathname;
+  });
+
+  // ── Konami-Code (↑↑↓↓←→←→ B A) → Matrix + Gruß ──
+  (function(){
+    const seq = [38,38,40,40,37,39,37,39,66,65];
+    let k = 0;
+    addEventListener('keydown', e=>{
+      k = (e.keyCode === seq[k]) ? k+1 : (e.keyCode === seq[0] ? 1 : 0);
+      if(k === seq.length){
+        k = 0;
+        const fl = document.getElementById('flash');
+        if(fl){ fl.classList.remove('boom'); void fl.offsetWidth; fl.classList.add('boom'); }
+        if(terminal && terminal.style.display === 'none') openConsole();
+        if(promptActive) out('<span class="run">🌌 KONAMI unlocked</span> — entering the matrix …');
+        runMatrix(9000);
+      }
+    });
+  })();
+
+  // Schon in dieser Sitzung gesehen? Dann direkt zur fertigen Seite
+  // (alle Funktionen/Variablen sind hier bereits initialisiert).
+  if(seen){
+    intro?.classList.add('gone');
+    if(page) page.hidden = false;
+    phase = 'universe';
+    document.body.classList.remove('locked');
+    document.body.classList.add('booted');
+    skipped = true;
+    // lebenden 3D-Hintergrund sofort an, 2D-Urknall-Canvas aus
+    startBg3d();
+    document.getElementById('bg3d')?.classList.add('on');
+    document.getElementById('cosmos')?.classList.add('faded');
+    cosmosRunning = false;
+    runPipelineInstant();   // schließt die Konsole am Ende selbst
+  }
+})();
+
+/* ════════════════ COMMAND PALETTE (Cmd/Ctrl+K) ════════════════ */
+(() => {
+  const backdrop = document.getElementById('paletteBackdrop');
+  const input = document.getElementById('paletteInput');
+  const list = document.getElementById('paletteList');
+  if(!backdrop || !input || !list) return;
+
+  function actions(){
+    const T = translations[currentLang] || translations.en;
+    return [
+      {label:T.pal_hero,    key:'↵', run:()=>scrollToId('sec-hero')},
+      {label:T.pal_about,   key:'01', run:()=>scrollToId('about')},
+      {label:T.pal_work,    key:'02', run:()=>scrollToId('work')},
+      {label:T.pal_contact, key:'03', run:()=>scrollToId('contact')},
+      {label:T.pal_github,  key:'↗',  run:()=>window.open('https://github.com/CC-X5','_blank','noopener')},
+      {label:T.pal_theme,   key:'🎨', run:()=>toggleTheme()},
+      {label:T.pal_lang,    key:'DE/EN', run:()=>toggleLang()},
+      {label:T.pal_console, key:'›_', run:()=>{ const c=document.getElementById('consoleReopen'); if(c && getComputedStyle(c).display!=='none') c.click(); }}
+    ];
+  }
+
+  let items = actions();
+  let active = 0;
+
+  function scrollToId(id){
+    const el = document.getElementById(id);
+    if(el){ el.hidden = false; el.classList.add('deployed'); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  }
+
+  function render(filter){
+    const f = (filter||'').toLowerCase();
+    const shown = items.filter(it => it.label.toLowerCase().includes(f));
+    list.innerHTML = '';
+    shown.forEach((it, i)=>{
+      const div = document.createElement('div');
+      div.className = 'pal-item' + (i===active ? ' active' : '');
+      div.innerHTML = `<span>${it.label}</span><span class="pi-key">${it.key}</span>`;
+      div.addEventListener('click', ()=>{ it.run(); close(); });
+      list.appendChild(div);
+    });
+    if(active >= shown.length) active = 0;
+    return shown;
+  }
+
+  function open(){
+    items = actions();
+    active = 0;
+    backdrop.classList.add('open');
+    input.value = '';
+    render('');
+    setTimeout(()=>input.focus(), 30);
+  }
+  function close(){ backdrop.classList.remove('open'); }
+
+  window.__rebuildPalette = ()=>{ if(backdrop.classList.contains('open')) { items = actions(); render(input.value); } };
+
+  document.addEventListener('keydown', e=>{
+    if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){
+      e.preventDefault();
+      backdrop.classList.contains('open') ? close() : open();
+    } else if(e.key === 'Escape' && backdrop.classList.contains('open')){
+      close();
+    }
+  });
+  input.addEventListener('keydown', e=>{
+    const shown = items.filter(it => it.label.toLowerCase().includes(input.value.toLowerCase()));
+    if(e.key === 'ArrowDown'){ e.preventDefault(); active = Math.min(shown.length-1, active+1); render(input.value); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); active = Math.max(0, active-1); render(input.value); }
+    else if(e.key === 'Enter'){ e.preventDefault(); if(shown[active]){ shown[active].run(); close(); } }
+  });
+  input.addEventListener('input', ()=>{ active = 0; render(input.value); });
+  backdrop.addEventListener('click', e=>{ if(e.target === backdrop) close(); });
+})();
+
+/* ════════════════ TERMINAL STATUS-INDICATOR ════════════════ */
+(() => {
+  const titleEl = document.querySelector('.term-title');
+  if(!titleEl) return;
+  // kleines Status-Pill rechts in der Titelleiste
+  const pill = document.createElement('span');
+  pill.id = 'termStatus';
+  pill.style.cssText = 'margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.5px;color:var(--accent2)';
+  let state = 'deploy';
+  function dotSvg(color){ return `<span style="width:7px;height:7px;border-radius:50%;background:${color};display:inline-block;box-shadow:0 0 8px ${color}"></span>`; }
+  function refresh(){
+    const T = translations[currentLang] || translations.en;
+    if(state === 'deploy'){
+      pill.innerHTML = dotSvg('#febc2e') + '<span>'+ T.status_deploy +' ▰▰▰▱▱</span>';
+      pill.style.color = '#febc2e';
+    } else {
+      pill.innerHTML = dotSvg('#28c840') + '<span>● '+ T.status_live +'</span>';
+      pill.style.color = '#28c840';
+    }
+  }
+  window.__refreshStatus = refresh;
+  window.__setStatusLive = ()=>{ state = 'live'; refresh(); };
+  // pill vor dem Skip-Button einsetzen
+  const skip = document.getElementById('skipBtn');
+  titleEl.parentNode.insertBefore(pill, skip);
+  refresh();
+})();
+
+/* ════════════════ KONTAKT-VERSAND (Web3Forms, ohne Backend) ════════════════ */
+(() => {
+  // kostenlosen Access-Key holen: https://web3forms.com → E-Mail eintragen → Key kopieren
+  const WEB3FORMS_KEY = "00c3fd3a-a282-4e0d-8661-d920080a9c3f";
+
+  // zentrale Sende-Funktion — wird von Formular UND CLI (send) genutzt
+  async function sendContact({ name, email, message }){
+    if(!WEB3FORMS_KEY || WEB3FORMS_KEY.indexOf('REPLACE') === 0) return { success:false, error:'nokey' };
+    try{
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          name, email, message,
+          subject: 'Portfolio-Kontakt von ' + (name || 'Website-Besucher'),
+          from_name: 'cc-x5.github.io'
+        })
+      });
+      const json = await res.json();
+      return { success: !!json.success, error: json.message };
+    }catch(err){ return { success:false, error:String(err) }; }
+  }
+  window.__sendContact = sendContact;
+
+  const form = document.getElementById('contactForm');
+  if(!form) return;
+  const statusEl = document.getElementById('cfStatus');
+  const sendBtn  = document.getElementById('cfSend');
+  const hp       = form.querySelector('.cf-hp');
+
+  const MSG = {
+    en:{ sending:'sending…', ok:"✓ Message sent — thanks, I'll get back to you soon.",
+         err:'✗ Something went wrong. Please email me directly: AJ-PV5@proton.me',
+         nokey:'⚠ Form not configured yet (missing access key).' },
+    de:{ sending:'wird gesendet…', ok:'✓ Nachricht gesendet — danke, ich melde mich bald.',
+         err:'✗ Etwas ging schief. Schreib mir bitte direkt: AJ-PV5@proton.me',
+         nokey:'⚠ Formular noch nicht konfiguriert (Access-Key fehlt).' }
+  };
+  const L = ()=> MSG[document.documentElement.lang] || MSG.en;
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if(hp && hp.checked) return;                 // Honeypot → Bot
+    statusEl.className = 'cf-status';
+    sendBtn.disabled = true;
+    statusEl.textContent = L().sending;
+    const r = await sendContact({
+      name: document.getElementById('cfName').value.trim(),
+      email: document.getElementById('cfEmail').value.trim(),
+      message: document.getElementById('cfMsg').value.trim()
+    });
+    if(r.success){ statusEl.classList.add('ok'); statusEl.textContent = L().ok; form.reset(); }
+    else if(r.error === 'nokey'){ statusEl.classList.add('err'); statusEl.textContent = L().nokey; }
+    else { statusEl.classList.add('err'); statusEl.textContent = L().err; }
+    sendBtn.disabled = false;
+  });
+})();
+</script>
+
+</body>
+</html>
