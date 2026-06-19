@@ -1313,10 +1313,6 @@ function startBg3d(){
     ctx.beginPath(); ctx.arc(CX,cy,r*9,0,Math.PI*2); ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(CX,cy,r,0,Math.PI*2); ctx.fill();
-    if(!reduced && Math.random()<.04){
-      ctx.fillStyle = 'rgba(255,255,255,.05)';
-      ctx.fillRect(0,0,W,H);
-    }
   }
 
   function drawParticles(now){
