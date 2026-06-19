@@ -106,6 +106,25 @@
     animation:hintPulse 2.2s ease-in-out infinite;
   }
   @keyframes hintPulse{0%,100%{opacity:.4}50%{opacity:1}}
+  /* kleine Foto­sensitivitäts-/Anfall-Warnung (zeigt sich vor dem Urknall) */
+  #intro .intro-warn{
+    position:absolute; bottom:26px; left:0; right:0; padding:0 24px;
+    font-family:var(--mono); font-size:11px; letter-spacing:1.5px;
+    color:var(--muted); opacity:.7; text-transform:uppercase; line-height:1.5;
+  }
+  @media(max-width:640px){
+    #intro .intro-warn{ font-size:10px; letter-spacing:.8px; bottom:20px }
+  }
+  /* expliziter Komplett-Skip neben der Warnung (foto-sensibler Pfad) */
+  #intro .intro-skip{
+    margin-top:24px; font-family:var(--mono); font-size:12px; letter-spacing:1px;
+    color:var(--muted); background:transparent; border:1px solid var(--line);
+    padding:9px 16px; border-radius:3px; cursor:pointer; text-transform:uppercase;
+    transition:color .25s, border-color .25s;
+  }
+  #intro .intro-skip:hover, #intro .intro-skip:focus-visible{
+    color:var(--accent); border-color:var(--accent); outline:none;
+  }
   #flash{
     position:fixed; inset:0; z-index:30;
     background:radial-gradient(circle,#fff 0%,#d8fff5 30%,transparent 70%);
@@ -185,6 +204,15 @@
       width:auto; margin-bottom:60px; animation:none;
     }
   }
+  /* Smartphone: Konsole nach der Show als dismissbares Bottom-Sheet,
+     statt blockierend im Seitenfluss zu kleben */
+  .terminal.mobile-float{
+    position:fixed; left:12px; right:12px; bottom:12px; top:auto;
+    width:auto; margin:0; z-index:14; max-height:64vh;
+    animation:dockLeft .5s cubic-bezier(.4,0,.2,1);
+  }
+  .terminal.mobile-float .term-body{max-height:48vh}
+  .terminal.mobile-float.minimized .term-body{max-height:50px; overflow:hidden}
   /* terminal fully closes after the run-through */
   .terminal.closing{
     opacity:0 !important;
@@ -557,6 +585,7 @@
     .cursor::after{animation:none}
     #intro .intro-hint{animation:none}
     #cosmos.shake{animation:none}
+    #flash.boom{animation:none}
     #about.anim-in .about p,
     #about.anim-in .chip,
     #work.anim-in .card{ animation:none; opacity:1; transform:none; }
@@ -604,6 +633,8 @@
 <div id="intro">
   <div class="intro-kicker" data-i18n="intro_kicker">t = 0 — before the first commit</div>
   <div class="intro-hint" data-i18n="intro_hint">click to initialize universe</div>
+  <button class="intro-skip" id="introSkip" data-i18n="intro_skip">skip intro ▸</button>
+  <div class="intro-warn" data-i18n="intro_warn">⚠ Photosensitivity warning — contains flashing lights &amp; motion</div>
 </div>
 
 <nav>
@@ -777,6 +808,8 @@ const translations = {
   en: {
     intro_kicker: 't = 0 — before the first commit',
     intro_hint:   'click to initialize universe',
+    intro_warn:   '⚠ Photosensitivity warning — contains flashing lights & motion',
+    intro_skip:   'skip intro ▸',
     replay:       '↺ replay big bang',
     reopen_console: '›_ console',
     palette_ph: "Jump to… (try 'projects', 'cv', 'theme')",
@@ -837,6 +870,8 @@ const translations = {
   de: {
     intro_kicker: 't = 0 — vor dem ersten Commit',
     intro_hint:   'klicken, um das Universum zu initialisieren',
+    intro_warn:   '⚠ Hinweis: enthält blinkende Lichter & Bewegungseffekte',
+    intro_skip:   'Intro überspringen ▸',
     replay:       '↺ Urknall wiederholen',
     reopen_console: '›_ Konsole',
     palette_ph: "Springe zu… (z.B. 'projekte', 'cv', 'theme')",
@@ -1126,6 +1161,8 @@ function startBg3d(){
   const canvas = document.getElementById('cosmos');
   const ctx = canvas.getContext('2d');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mqMobile = window.matchMedia('(max-width:760px)');
+  const isMobile = () => mqMobile.matches;
   let seen = false;
   try{ seen = sessionStorage.getItem('bangSeen') === '1'; }catch(e){}
 
@@ -1468,9 +1505,33 @@ function startBg3d(){
       }, 3100);
     }, 3500);
   }
+  // Komplett-Skip: überspringt Blitz, Partikel & Shake und springt
+  // direkt zur fertigen Seite (foto-sensibler Pfad — siehe Seizure-Warnung).
+  function skipIntro(){
+    if(phase!=='singularity') return;
+    intro.classList.add('gone');
+    page.hidden = false;
+    scrollTo(0,0);
+    phase = 'universe';
+    document.body.classList.remove('locked');
+    document.body.classList.add('booted');
+    skipped = true;
+    bg3dRevealHandled = true;
+    try{ sessionStorage.setItem('bangSeen','1'); }catch(e){}
+    startBg3d();
+    document.getElementById('bg3d')?.classList.add('on');
+    document.getElementById('cosmos')?.classList.add('faded');
+    cosmosRunning = false;
+    runPipelineInstant();
+  }
+  const introSkipBtn = document.getElementById('introSkip');
+  introSkipBtn?.addEventListener('click', e=>{ e.stopPropagation(); skipIntro(); });
+
   intro.addEventListener('click', detonate);
   addEventListener('keydown', e=>{
-    if(phase==='singularity' && (e.key===' '||e.key==='Enter')) detonate();
+    if(phase!=='singularity') return;
+    if(e.target === introSkipBtn) return;            // Skip-Button regelt sich selbst
+    if(e.key===' '||e.key==='Enter') detonate();
   });
 
   /* ── CLI-Pipeline ── */
@@ -1791,9 +1852,16 @@ function startBg3d(){
         terminal.classList.add('compact');
         activatePrompt();
         initScrollAnims();
-        // Show vorbei → Konsole als schwebendes Panel nach links docken
+        // Show vorbei
         await sleep(skipped ? 200 : 700);
-        terminal.classList.add('docked-left');
+        if(isMobile()){
+          // Smartphone: Konsole nicht blockierend im Fluss lassen →
+          // schließen und nur als „›_ console"-Chip anbieten.
+          closeConsole(skipped);
+        } else {
+          // Desktop: Konsole als schwebendes Panel nach links docken
+          terminal.classList.add('docked-left');
+        }
       }
     }
   }
@@ -1812,7 +1880,8 @@ function startBg3d(){
     }
     activatePrompt();
     initScrollAnims();
-    terminal.classList.add('docked-left');
+    if(isMobile()) closeConsole(true);
+    else terminal.classList.add('docked-left');
   }
 
   // Konsole minimiert öffnen/schließen
@@ -1830,6 +1899,11 @@ function startBg3d(){
     if(!terminal) return;
     terminal.style.display = '';
     terminal.classList.remove('closing','minimized');
+    if(isMobile()){
+      // auf dem Smartphone als schwebendes Bottom-Sheet öffnen
+      terminal.classList.remove('docked-left');
+      terminal.classList.add('mobile-float','compact');
+    }
     void terminal.offsetWidth;
     reopenChip?.classList.remove('show');
     const inp = document.getElementById('cliInput');
