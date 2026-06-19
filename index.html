@@ -113,7 +113,14 @@
     color:var(--muted); opacity:.7; text-transform:uppercase; line-height:1.5;
   }
   @media(max-width:640px){
-    #intro .intro-warn{ font-size:10px; letter-spacing:.8px; bottom:20px }
+    /* Smartphone: Intro-Block kompakter, Warnung in den Fluss unter den
+       Skip-Button holen, damit sie nicht verdeckt/abgeschnitten wird */
+    #intro .intro-kicker{ margin-top:84px }
+    #intro .intro-skip{ margin-top:20px }
+    #intro .intro-warn{
+      position:static; bottom:auto; margin-top:22px; max-width:340px;
+      font-size:10px; letter-spacing:.8px;
+    }
   }
   /* expliziter Komplett-Skip neben der Warnung (foto-sensibler Pfad) */
   #intro .intro-skip{
